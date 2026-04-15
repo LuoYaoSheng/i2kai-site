@@ -25,7 +25,7 @@ export const personalInfo = {
   tagline: '先体验，再学习，再读源码',
   location: '福建泉州',
   wechatPublic: '极客第一行',
-  wechatPublic2: '待补充（第二个公众号名称）',
+  wechatPublic2: '落落在厦',
   highlights: [
     { label: '年行业经验', value: '12+' },
     { label: '完成项目', value: '50+' },
