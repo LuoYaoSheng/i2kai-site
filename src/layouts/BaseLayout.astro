@@ -10,7 +10,7 @@ interface Props {
 
 const {
   title,
-  description = 'i2kai — 开发者 / 开源爱好者 / BLE & IoT 探索者',
+  description = '12年+全栈技术开发与管理经验，专注于物联网技术架构、智慧城市解决方案和分布式系统开发。',
   image,
 } = Astro.props;
 
@@ -78,11 +78,13 @@ const currentPath = Astro.url.pathname;
         <slot />
       </main>
       <footer class="site-footer">
-        <span>&copy; {new Date().getFullYear()} i2kai</span>
+        <span>&copy; {new Date().getFullYear()} {seoMeta.author}</span>
         <span>
           <a href="https://github.com/LuoYaoSheng" target="_blank" rel="noopener">GitHub</a>
           &nbsp;&middot;&nbsp;
           <a href="https://gitee.com/luoyaosheng" target="_blank" rel="noopener">Gitee</a>
+          &nbsp;&middot;&nbsp;
+          <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">闽ICP备2022003862号</a>
         </span>
       </footer>
     </div>

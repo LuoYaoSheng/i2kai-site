@@ -1,12 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { contacts } from '../data/site';
+import { contacts, personalInfo } from '../data/site';
 ---
 
-<BaseLayout title="联系 — i2kai">
+<BaseLayout title={`联系 — ${personalInfo.name}`}>
   <div class="page-intro">
-    <h1>联系</h1>
-    <p>欢迎通过以下方式联系我。</p>
+    <h1>联系我</h1>
+    <p>欢迎通过以下方式联系我，无论是项目合作、技术交流还是其他问题。</p>
   </div>
 
   <section class="section">
@@ -23,11 +23,39 @@ import { contacts } from '../data/site';
     </div>
   </section>
 
-  <!-- 公众号占位 -->
+  <!-- 公众号 -->
   <section class="section">
-    <div class="note-box" style="text-align: center; padding: 2rem;">
-      <h3>公众号</h3>
-      <p>公众号二维码或更多联系方式后续补充。</p>
+    <div class="section-head">
+      <h2>微信公众号</h2>
+    </div>
+    <div class="wechat-qr-box">
+      <img src="/wechat-qr.jpg" alt="微信公众号二维码" width="160" height="160" />
+      <div class="wechat-qr-text">
+        <strong>{personalInfo.wechatPublic}</strong>
+        <p>分享物联网、微服务、分布式系统等领域的专业知识与实战经验。</p>
+        <p>技术文章分享 · 项目实战经验 · 行业动态分析 · 电子书资源</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 其他联系方式 -->
+  <section class="section">
+    <div class="section-head">
+      <h2>其他方式</h2>
+    </div>
+    <div class="contact-list">
+      <div class="contact-item">
+        <span class="contact-label">邮箱</span>
+        <span>1034639560@qq.com</span>
+      </div>
+      <div class="contact-item">
+        <span class="contact-label">电话</span>
+        <span>+86 15980116983</span>
+      </div>
+      <div class="contact-item">
+        <span class="contact-label">地区</span>
+        <span>{personalInfo.location}</span>
+      </div>
     </div>
   </section>
 </BaseLayout>

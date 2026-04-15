@@ -176,6 +176,15 @@ p {
   padding: 5rem 0 4rem;
 }
 
+.hero-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--accent-soft);
+  margin-bottom: 1.5rem;
+}
+
 .hero-greeting {
   font-size: 1.1rem;
   color: var(--muted);
@@ -196,6 +205,36 @@ p {
   font-size: 1.1rem;
   color: var(--accent);
   margin: 0.3rem 0 1.5rem;
+}
+
+.hero-title-sub {
+  font-size: 1.05rem;
+  color: var(--muted);
+  margin: 0 0 1rem;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 2rem;
+  margin: 1.5rem 0 2rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-family: 'Instrument Serif', serif;
+  font-size: 2rem;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-top: 0.2rem;
 }
 
 .hero-one-liner {
@@ -799,6 +838,215 @@ p {
   border: none;
 }
 
+/* ---------- WeChat QR ---------- */
+
+.wechat-qr-box {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border-radius: 1.25rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+
+.wechat-qr-box img {
+  border-radius: 0.75rem;
+  flex-shrink: 0;
+}
+
+.wechat-qr-text strong {
+  display: block;
+  font-size: 1.1rem;
+  color: var(--ink);
+  margin-bottom: 0.4rem;
+}
+
+.wechat-qr-text p {
+  margin: 0.3rem 0 0;
+  font-size: 0.9rem;
+}
+
+/* ---------- Stats Row (About) ---------- */
+
+.stats-row {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.2rem 1.5rem;
+  border-radius: 1rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  min-width: 100px;
+}
+
+.stat-card .stat-value {
+  font-family: 'Instrument Serif', serif;
+  font-size: 2.2rem;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.stat-card .stat-label {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-top: 0.3rem;
+}
+
+/* ---------- Education Card ---------- */
+
+.edu-card {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.5rem;
+  border-radius: 1.25rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+
+.edu-info strong {
+  display: block;
+  font-size: 1.15rem;
+  color: var(--ink);
+  margin-bottom: 0.3rem;
+}
+
+.edu-detail {
+  display: block;
+  font-size: 0.92rem;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+}
+
+/* ---------- Experience Cards ---------- */
+
+.exp-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.exp-card {
+  padding: 1.5rem;
+  border-radius: 1.25rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+
+.exp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+}
+
+.exp-header h3 {
+  font-size: 1.15rem;
+}
+
+.exp-period {
+  font-size: 0.82rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.exp-card p {
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.exp-tags {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-top: 0.8rem;
+}
+
+/* ---------- Skills Grid ---------- */
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.skill-group .section-label {
+  margin-bottom: 1rem;
+}
+
+.skill-bars {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.skill-bar-row {
+  display: grid;
+  grid-template-columns: 8rem 1fr 3rem;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.skill-name {
+  font-size: 0.88rem;
+  color: var(--ink);
+}
+
+.skill-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(22, 18, 15, 0.08);
+  overflow: hidden;
+}
+
+.skill-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--accent-gradient);
+}
+
+.skill-pct {
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-align: right;
+}
+
+.skill-extras {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-top: 1.2rem;
+}
+
+/* ---------- Contact List ---------- */
+
+.contact-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1.2rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid var(--line);
+}
+
+.contact-label {
+  font-size: 0.82rem;
+  color: var(--muted);
+  min-width: 3rem;
+}
+
 /* ---------- Empty State ---------- */
 
 .empty-state {
@@ -846,5 +1094,31 @@ p {
     flex-basis: 100%;
     order: 3;
     margin-left: 0;
+  }
+
+  .skills-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-stats {
+    gap: 1.2rem;
+  }
+
+  .stats-row {
+    gap: 1rem;
+  }
+
+  .wechat-qr-box {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .exp-header {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .skill-bar-row {
+    grid-template-columns: 6rem 1fr 3rem;
   }
 }

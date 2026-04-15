@@ -1,8 +1,8 @@
 // 站点元信息
 export const siteMeta = {
   name: 'i2kai',
-  title: '开发者 / 开源爱好者 / BLE & IoT 探索者',
-  description: '开源项目、技术写作与工具构建',
+  title: '物联网架构专家 / 全栈开发者 / 开源爱好者',
+  description: '12年+全栈技术开发与管理经验，专注于物联网、智慧城市和开源项目。',
   heroNote: '用真实项目记录 BLE、IoT 和桌面工具的开发旅程。',
 };
 
@@ -10,20 +10,36 @@ export const siteMeta = {
 export const seoMeta = {
   siteUrl: 'https://i2kai.com',
   siteName: 'i2kai',
-  author: 'LuoYaoSheng',
-  keywords: 'i2kai, LuoYaoSheng, 独立开发者, 开源项目, BLE, IoT, 桌面工具, Smart BLE, RedisPilot',
+  author: '罗耀生',
+  keywords: 'i2kai, 罗耀生, 物联网架构, 智慧城市, 独立开发者, 开源项目, BLE, IoT, 桌面工具, Smart BLE, RedisPilot',
   themeColor: '#9f2f16',
-  ogImage: '/favicon.svg', // 默认 OG 图片，后续替换为专用社交分享图
+  ogImage: '/favicon.svg',
 };
 
 // 个人信息
 export const personalInfo = {
-  name: 'LuoYaoSheng',
+  name: '罗耀生',
   alias: 'i2kai',
-  bio: '独立开发者，专注于 BLE、IoT 和桌面工具开发。维护多个开源项目，相信「先体验，再看教程，再读源码」的学习方式。',
+  title: '物联网架构专家 / 全栈开发者',
+  bio: '12年+全栈技术开发与管理经验。专注于物联网技术架构、智慧城市解决方案和分布式系统开发，致力于用技术创新解决实际问题。',
   tagline: '先体验，再学习，再读源码',
-  location: '中国',
-  roles: ['独立开发者', '开源维护者', 'BLE / IoT 探索者', '桌面工具构建者'],
+  location: '福建泉州',
+  wechatPublic: '极客第一行',
+  highlights: [
+    { label: '年行业经验', value: '12+' },
+    { label: '完成项目', value: '50+' },
+    { label: '合作客户', value: '20+' },
+  ],
+  roles: ['物联网架构专家', '全栈开发者', '开源维护者', 'BLE / IoT 探索者'],
+};
+
+// 教育背景
+export const education = {
+  school: '福建理工大学',
+  schoolLogo: 'https://static-data.gaokao.cn/upload/logo/474.jpg',
+  major: '电子信息工程',
+  degree: '学士学位',
+  period: '2008 - 2012',
 };
 
 // 开发哲学
@@ -42,22 +58,73 @@ export const philosophy = [
   },
 ];
 
+// 工作经历
+export const experiences = [
+  {
+    period: '2020.11 — 2024.06',
+    role: '技术总监 — 福建省泉州华云软件有限公司',
+    description: '组建 30 人技术团队，完成智慧消防系统架构设计，实现用电/烟雾/液位监控准确率 99.2%。主导智慧校园平台开发，集成门禁考勤、能耗管理等 8 大模块，落地 12 所学校。',
+    highlights: ['30人团队', '99.2%准确率', '12所学校'],
+  },
+  {
+    period: '2019.11 — 2020.10',
+    role: '技术经理 — 厦门华方软件科技有限公司',
+    description: '搭建路边智慧停车平台，日均处理 10万+ 订单，营收提升 200%。重构物联网通信协议，降低设备掉线率至 0.3%（行业平均 2.5%）。',
+    highlights: ['10万+日订单', '营收提升200%', '掉线率0.3%'],
+  },
+  {
+    period: '2015.09 — 2018.09',
+    role: '技术总监 & 分公司总经理 — 北京易家信息',
+    description: '从 0 到 1 搭建直播电商平台，峰值并发 50万+，获阿里战略投资。研发可视化物联网系统，实现 10万+ 设备实时监控。',
+    highlights: ['50万+并发', '阿里投资', '10万+设备'],
+  },
+  {
+    period: '2012.07 — 2013.09',
+    role: '高级程序员 — KTV 智能点单系统',
+    description: '重构核心订单模块，QPS 从 200 提升至 1500+，支撑全国 500+ 门店。首创"摇一摇点歌"功能，用户活跃度提升 120%。',
+    highlights: ['QPS 1500+', '500+门店', '活跃度+120%'],
+  },
+];
+
+// 专业技能
+export const skills = {
+  core: [
+    { name: 'Go', level: 95 },
+    { name: 'PHP', level: 90 },
+    { name: 'Java', level: 85 },
+    { name: 'MySQL / PostgreSQL', level: 90 },
+    { name: 'Docker / K8S', level: 85 },
+  ],
+  domains: [
+    { name: '物联网架构', level: 95 },
+    { name: '智慧城市', level: 90 },
+    { name: '分布式系统', level: 95 },
+    { name: '团队建设', level: 90 },
+  ],
+  extras: ['React Native', 'ESP32/STM32', 'JavaScript', 'Spring Cloud', 'InfluxDB', 'Flutter', 'Tauri', 'BLE'],
+};
+
 // 成长时间线
 export const timeline = [
   {
     year: '2024',
-    title: '独立开发',
+    title: '独立开发 & 开源',
     description: '围绕 BLE、IoT 和桌面工具构建开源项目体系，启动 Smart BLE 和 Open IoT Platform。',
   },
   {
-    year: '2023',
-    title: 'BLE 与 IoT 深入',
-    description: '深入蓝牙低功耗协议，完成跨平台 BLE 调试工具的多实现对照。',
+    year: '2020',
+    title: '技术总监',
+    description: '组建团队，主导智慧消防和智慧校园平台，深耕物联网架构和智慧城市。',
   },
   {
-    year: '2022',
-    title: '全栈工程积累',
-    description: '服务端架构、移动端开发和桌面工具构建经验积累，开始探索 Flutter 和 Tauri。',
+    year: '2015',
+    title: '创业 & 直播电商',
+    description: '从零搭建直播电商平台，获阿里战略投资，探索高并发分布式系统。',
+  },
+  {
+    year: '2012',
+    title: '全栈开发起步',
+    description: '福建理工大学毕业，电子信息工程专业，开始全栈开发之路。',
   },
 ];
 
@@ -112,25 +179,6 @@ export const skillAreas = [
   {
     title: '全栈工程',
     description: '服务端、前端、数据库、DevOps',
-  },
-];
-
-// 经历
-export const experiences = [
-  {
-    period: '2024 — 至今',
-    role: '独立开发者 & 开源维护者',
-    description: '围绕 BLE、IoT 和桌面工具构建开源项目体系，维护 Smart BLE、Open IoT Platform、RedisPilot 等核心项目。专注「先体验、再学习」的开发理念，让每个项目都可以直接跑起来。',
-  },
-  {
-    period: '2022 — 2023',
-    role: 'BLE / IoT 深入与跨端探索',
-    description: '深入蓝牙低功耗协议栈，完成 Smart BLE 的多平台实现对照（小程序、iOS、Android、Flutter）。开始用 Flutter 和 Tauri 构建桌面和移动工具。',
-  },
-  {
-    period: '此前',
-    role: '全栈开发',
-    description: '积累服务端架构（Go/Java）、前端开发、数据库设计和 DevOps 经验。参与过多个从零到一的产品项目，理解从需求到上线的完整工程流程。',
   },
 ];
 
@@ -277,9 +325,14 @@ export const contacts = [
     value: 'i2kai@foxmail.com',
     href: 'mailto:i2kai@foxmail.com',
   },
+  {
+    label: '公众号',
+    value: '极客第一行',
+    href: '/contact',
+  },
 ];
 
-// 文档站汇总（导航/链接用）
+// 文档站汇总
 export const docSites = [
   { name: 'Smart BLE', url: 'https://lightble.i2kai.com' },
   { name: 'Open IoT Platform', url: 'https://iot.open.i2kai.com' },

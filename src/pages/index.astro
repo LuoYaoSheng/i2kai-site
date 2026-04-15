@@ -8,16 +8,24 @@ recentPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const latestPost = recentPosts[0];
 ---
 
-<BaseLayout title={`${siteMeta.name} — ${siteMeta.title}`}>
-  <!-- Hero: 大签名 -->
+<BaseLayout title={`${personalInfo.name} — ${personalInfo.title}`}>
+  <!-- Hero: 头像 + 签名 -->
   <section class="hero-personal">
-    <p class="hero-greeting">你好，我是</p>
+    <img class="hero-avatar" src="/avatar.jpg" alt={personalInfo.name} width="96" height="96" />
     <h1 class="hero-name">{personalInfo.name}</h1>
-    <p class="hero-alias">@{personalInfo.alias}</p>
+    <p class="hero-title-sub">{personalInfo.title}</p>
     <p class="hero-one-liner">
-      独立开发者，做 BLE、IoT 和桌面工具的开源项目。<br/>
+      {personalInfo.bio}<br/>
       <em class="hero-motto">「先体验，再学习，再读源码。」</em>
     </p>
+    <div class="hero-stats">
+      {personalInfo.highlights.map((h) => (
+        <div class="stat-item">
+          <span class="stat-value">{h.value}</span>
+          <span class="stat-label">{h.label}</span>
+        </div>
+      ))}
+    </div>
     <div class="hero-links">
       <a href="https://github.com/LuoYaoSheng" target="_blank" rel="noopener">GitHub</a>
       <a href="https://gitee.com/luoyaosheng" target="_blank" rel="noopener">Gitee</a>
@@ -86,4 +94,16 @@ const latestPost = recentPosts[0];
       <a href="/blog" class="more-link">更多文章</a>
     </section>
   )}
+
+  <!-- 公众号 -->
+  <section class="home-section">
+    <h2 class="section-label">公众号</h2>
+    <div class="wechat-qr-box">
+      <img src="/wechat-qr.jpg" alt="微信公众号二维码" width="140" height="140" />
+      <div class="wechat-qr-text">
+        <strong>{personalInfo.wechatPublic}</strong>
+        <p>分享物联网、微服务、分布式系统等领域的专业知识与实战经验。</p>
+      </div>
+    </div>
+  </section>
 </BaseLayout>

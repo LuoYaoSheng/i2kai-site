@@ -1,23 +1,37 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { personalInfo, skillAreas, experiences, timeline, philosophy } from '../data/site';
+import { personalInfo, education, experiences, skills, timeline, philosophy } from '../data/site';
 ---
 
-<BaseLayout title="关于 — i2kai">
+<BaseLayout title={`关于 — ${personalInfo.name}`}>
   <div class="page-intro">
-    <h1>关于</h1>
+    <h1>关于我</h1>
     <p>{personalInfo.bio}</p>
   </div>
 
-  <!-- 个人故事 -->
+  <!-- 数据亮点 -->
+  <section class="section">
+    <div class="stats-row">
+      {personalInfo.highlights.map((h) => (
+        <div class="stat-card">
+          <span class="stat-value">{h.value}</span>
+          <span class="stat-label">{h.label}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- 教育背景 -->
   <section class="section">
     <div class="section-head">
-      <h2>为什么做开源</h2>
+      <h2>教育背景</h2>
     </div>
-    <div class="prose">
-      <p>我是一名独立开发者，日常工作就是围绕 BLE、IoT 和桌面工具构建开源项目。</p>
-      <p>做开源的初衷很简单——我学 BLE 和 IoT 的时候，发现真正能跑起来、能体验的完整项目很少。大多数仓库要么只有代码没有文档，要么文档写得像教科书而不是"上手指南"。所以我想把自己踩过的坑、做过的东西公开出来，让后来的人能先跑起来、先体验，再决定要不要深入。</p>
-      <p>这就是「先体验，再学习，再读源码」这个理念的来源。它不是一句口号，而是我真实的学习路径——每当我先把东西跑起来、看到效果之后，回头去理解原理就变得顺畅得多。</p>
+    <div class="edu-card">
+      <div class="edu-info">
+        <strong>{education.school}</strong>
+        <span class="edu-detail">{education.major} · {education.degree}</span>
+        <span class="mono">{education.period}</span>
+      </div>
     </div>
   </section>
 
@@ -40,36 +54,64 @@ import { personalInfo, skillAreas, experiences, timeline, philosophy } from '../
     </div>
   </section>
 
-  <!-- 经历 -->
+  <!-- 工作经历 -->
   <section class="section">
     <div class="section-head">
-      <h2>经历</h2>
+      <h2>工作经历</h2>
     </div>
-    <div class="section-grid">
+    <div class="exp-list">
       {experiences.map((exp) => (
-        <div class="about-card">
-          <span class="mono">{exp.period}</span>
-          <h3>{exp.role}</h3>
+        <div class="exp-card">
+          <div class="exp-header">
+            <h3>{exp.role}</h3>
+            <span class="mono exp-period">{exp.period}</span>
+          </div>
           <p>{exp.description}</p>
+          <div class="exp-tags">
+            {exp.highlights.map((h) => (
+              <span class="tag-sm">{h}</span>
+            ))}
+          </div>
         </div>
       ))}
     </div>
   </section>
 
-  <!-- 技术栈与选择 -->
+  <!-- 技术栈 -->
   <section class="section">
     <div class="section-head">
       <h2>技术栈</h2>
     </div>
-    <div class="prose">
-      <p>我选择技术栈的标准很简单：能用、好维护、适合独立开发者单兵作战。</p>
-      <ul>
-        <li><strong>Go + Gin</strong>：服务端首选。编译快、部署简单，一个二进制文件就能跑。IoT 平台的服务端用它是因为性能足够，且交叉编译对嵌入式场景友好。</li>
-        <li><strong>Flutter</strong>：移动端和跨平台 BLE 调试的首选。一套代码覆盖 Android/iOS，且 Flutter 的 BLE 插件生态比较成熟。</li>
-        <li><strong>Tauri</strong>：桌面工具的技术底座。相比 Electron 体积极小（几 MB vs 几百 MB），Rust 后端也更适合做本地数据库和 SSH 连接这类底层操作。</li>
-        <li><strong>ESP32 + Arduino</strong>：固件开发用 PlatformIO + Arduino 框架，上手快，社区资源丰富。</li>
-        <li><strong>Astro</strong>：文档站和个人网站。零 JS 输出、构建快，适合内容驱动的静态站。</li>
-      </ul>
+    <div class="skills-grid">
+      <div class="skill-group">
+        <span class="section-label">核心技术</span>
+        <div class="skill-bars">
+          {skills.core.map((s) => (
+            <div class="skill-bar-row">
+              <span class="skill-name">{s.name}</span>
+              <div class="skill-bar"><div class="skill-fill" style={`width: ${s.level}%`}></div></div>
+              <span class="skill-pct mono">{s.level}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div class="skill-group">
+        <span class="section-label">专业领域</span>
+        <div class="skill-bars">
+          {skills.domains.map((s) => (
+            <div class="skill-bar-row">
+              <span class="skill-name">{s.name}</span>
+              <div class="skill-bar"><div class="skill-fill" style={`width: ${s.level}%`}></div></div>
+              <span class="skill-pct mono">{s.level}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+    <div class="skill-extras">
+      {skills.extras.map((tag) => (
+        <span class="tag-sm">{tag}</span>
+      ))}
     </div>
   </section>
 
@@ -84,21 +126,6 @@ import { personalInfo, skillAreas, experiences, timeline, philosophy } from '../
           <span class="philosophy-step">{i + 1}</span>
           <h3>{item.title}</h3>
           <p>{item.description}</p>
-        </div>
-      ))}
-    </div>
-  </section>
-
-  <!-- 专业领域 -->
-  <section class="section">
-    <div class="section-head">
-      <h2>专业领域</h2>
-    </div>
-    <div class="section-grid">
-      {skillAreas.map((area) => (
-        <div class="section-card">
-          <h3>{area.title}</h3>
-          <p>{area.description}</p>
         </div>
       ))}
     </div>
