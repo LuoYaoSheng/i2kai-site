@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allVideos = await getCollection('videos', ({ data }) => !data.draft);
+const videos = allVideos.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<BaseLayout title="视频 — i2kai">
+  <div class="page-intro">
+    <h1>视频</h1>
+    <p>Bilibili / YouTube 视频内容与笔记。</p>
+  </div>
+
+  {videos.length > 0 ? (
+    <section class="section">
+      <div class="section-grid">
+        {videos.map((video) => (
+          <article class="video-card">
+            <div class="meta-row">
+              <span class="mono">
+                {video.data.date.toLocaleDateString('zh-CN')}
+              </span>
+              <span class="status-chip">
+                {video.data.platform === 'bilibili' ? 'Bilibili' : 'YouTube'}
+              </span>
+            </div>
+            <h3>{video.data.title}</h3>
+            <p>{video.data.description}</p>
+            {video.data.tags.length > 0 && (
+              <div class="meta-row">
+                {video.data.tags.map((tag: string) => (
+                  <span class="meta-pill">{tag}</span>
+                ))}
+              </div>
+            )}
+            <a href={`/videos/${video.id}`}>查看详情 &rarr;</a>
+          </article>
+        ))}
+      </div>
+    </section>
+  ) : (
+    <div class="empty-state">
+      <p>视频内容即将到来，敬请期待。</p>
+    </div>
+  )}
+</BaseLayout>

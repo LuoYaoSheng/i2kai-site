@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { projectGroups } from '../data/site';
+---
+
+<BaseLayout title="项目 — i2kai">
+  <div class="page-intro">
+    <h1>项目</h1>
+    <p>围绕 BLE、IoT、桌面工具和效率工具的开源项目集合。</p>
+  </div>
+
+  {projectGroups.map((group) => (
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2>{group.title}</h2>
+          <p>{group.intro}</p>
+        </div>
+      </div>
+      <div class="section-grid">
+        {group.items.map((project) => (
+          <ProjectCard {...project} />
+        ))}
+      </div>
+    </section>
+  ))}
+</BaseLayout>

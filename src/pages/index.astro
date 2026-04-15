@@ -1,0 +1,75 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { siteMeta, personalInfo, skillAreas, featuredProjects } from '../data/site';
+---
+
+<BaseLayout title={`${siteMeta.name} — ${siteMeta.title}`}>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-main">
+      <span class="eyebrow">i2kai</span>
+      <h1>{personalInfo.alias}</h1>
+      <p class="hero-copy">{siteMeta.heroNote}</p>
+      <div class="cta-row">
+        <a href="/projects" class="button-primary">查看项目</a>
+        <a href="/about" class="button-secondary">了解更多</a>
+      </div>
+    </div>
+    <div class="hero-side">
+      <div class="hero-stack">
+        {personalInfo.roles.map((role) => (
+          <div class="note-box">
+            <strong>{role}</strong>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 精选项目 -->
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <h2>精选项目</h2>
+        <p>围绕 BLE、IoT 和桌面工具的开源项目。</p>
+      </div>
+      <a href="/projects" class="button-secondary">全部项目</a>
+    </div>
+    <div class="section-grid">
+      {featuredProjects.map((project) => (
+        <ProjectCard {...project} />
+      ))}
+    </div>
+  </section>
+
+  <!-- 专业领域 -->
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <h2>专业领域</h2>
+      </div>
+    </div>
+    <div class="hero-grid">
+      {skillAreas.map((area) => (
+        <div class="metric">
+          <strong>{area.title}</strong>
+          <p>{area.description}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section">
+    <div class="note-box" style="text-align: center; padding: 2rem;">
+      <h2>一起探索</h2>
+      <p>关注开源项目、技术博客和视频内容。</p>
+      <div class="cta-row" style="justify-content: center;">
+        <a href="/blog" class="button-primary">阅读博客</a>
+        <a href="/videos" class="button-secondary">观看视频</a>
+        <a href="/contact" class="button-secondary">联系方式</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

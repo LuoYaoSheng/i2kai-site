@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { personalInfo, skillAreas, experiences } from '../data/site';
+---
+
+<BaseLayout title="关于 — i2kai">
+  <div class="page-intro">
+    <h1>关于</h1>
+    <p>{personalInfo.bio}</p>
+  </div>
+
+  <!-- 经历 -->
+  <section class="section">
+    <div class="section-head">
+      <h2>经历</h2>
+    </div>
+    <div class="section-grid">
+      {experiences.map((exp) => (
+        <div class="about-card">
+          <span class="mono">{exp.period}</span>
+          <h3>{exp.role}</h3>
+          <p>{exp.description}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- 专业领域 -->
+  <section class="section">
+    <div class="section-head">
+      <h2>专业领域</h2>
+    </div>
+    <div class="section-grid">
+      {skillAreas.map((area) => (
+        <div class="section-card">
+          <h3>{area.title}</h3>
+          <p>{area.description}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

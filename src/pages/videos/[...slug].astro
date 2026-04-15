@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import VideoEmbed from '../../components/VideoEmbed.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const videos = await getCollection('videos', ({ data }) => !data.draft);
+  return videos.map((video) => ({
+    params: { slug: video.id },
+    props: { video },
+  }));
+}
+
+const { video } = Astro.props;
+const { Content } = await render(video);
+---
+
+<BaseLayout title={`${video.data.title} — i2kai 视频`}>
+  <div class="page-intro">
+    <a href="/videos">&larr; 返回视频列表</a>
+    <h1>{video.data.title}</h1>
+    <div class="meta-row">
+      <span class="mono">
+        {video.data.date.toLocaleDateString('zh-CN')}
+      </span>
+      <span class="status-chip">
+        {video.data.platform === 'bilibili' ? 'Bilibili' : 'YouTube'}
+      </span>
+      {video.data.duration && (
+        <span class="meta-pill">{video.data.duration}</span>
+      )}
+      {video.data.tags.map((tag: string) => (
+        <span class="meta-pill">{tag}</span>
+      ))}
+    </div>
+    <p>{video.data.description}</p>
+  </div>
+
+  <!-- 视频嵌入播放器 -->
+  <VideoEmbed
+    platform={video.data.platform}
+    bvid={video.data.bvid}
+    videoId={video.data.videoId}
+  />
+
+  <!-- 文字笔记 -->
+  <article class="prose">
+    <Content />
+  </article>
+</BaseLayout>

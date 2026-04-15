@@ -1,0 +1,23 @@
+---
+interface Props {
+  platform: 'bilibili' | 'youtube';
+  bvid?: string;
+  videoId?: string;
+}
+
+const { platform, bvid, videoId } = Astro.props;
+
+const src =
+  platform === 'bilibili'
+    ? `https://player.bilibili.com/player.html?bvid=${bvid}&autoplay=0`
+    : `https://www.youtube.com/embed/${videoId}`;
+---
+
+<div class="video-embed-wrapper">
+  <iframe
+    src={src}
+    allowfullscreen
+    loading="lazy"
+    title="Video player"
+  />
+</div>

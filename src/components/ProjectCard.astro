@@ -1,0 +1,34 @@
+---
+interface Props {
+  name: string;
+  id: string;
+  status: string;
+  summary: string;
+  repo: string;
+  github?: string;
+  tags?: string[];
+}
+
+const { name, status, summary, repo, github, tags = [] } = Astro.props;
+---
+
+<div class="project-card">
+  <div class="meta-row">
+    <span class="status-chip">{status}</span>
+    {tags.map((tag) => (
+      <span class="meta-pill">{tag}</span>
+    ))}
+  </div>
+  <h3>{name}</h3>
+  <p>{summary}</p>
+  <div class="cta-row">
+    <a href={repo} target="_blank" rel="noopener" class="button-secondary">
+      Gitee
+    </a>
+    {github && (
+      <a href={github} target="_blank" rel="noopener" class="button-secondary">
+        GitHub
+      </a>
+    )}
+  </div>
+</div>

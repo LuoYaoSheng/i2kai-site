@@ -1,0 +1,67 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'i2kai — 开发者 / 开源爱好者 / BLE & IoT 探索者' } = Astro.props;
+
+const navItems = [
+  { label: '首页', href: '/' },
+  { label: '项目', href: '/projects' },
+  { label: '关于', href: '/about' },
+  { label: '博客', href: '/blog' },
+  { label: '视频', href: '/videos' },
+  { label: '联系', href: '/contact' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="topbar">
+        <a class="brand" href="/">i2kai</a>
+        <nav class="nav">
+          {navItems.map((item) => (
+            <a
+              href={item.href}
+              class:list={[currentPath === item.href && 'active']}
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
+      </header>
+      <main>
+        <slot />
+      </main>
+      <footer class="site-footer">
+        <span>&copy; {new Date().getFullYear()} i2kai</span>
+        <span>
+          <a href="https://github.com/LuoYaoSheng" target="_blank" rel="noopener">GitHub</a>
+          &nbsp;&middot;&nbsp;
+          <a href="https://gitee.com/luoyaosheng" target="_blank" rel="noopener">Gitee</a>
+        </span>
+      </footer>
+    </div>
+  </body>
+</html>
+
+<style>
+  .nav a.active {
+    color: var(--ink);
+    font-weight: 600;
+  }
+</style>

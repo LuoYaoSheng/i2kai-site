@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { contacts } from '../data/site';
+---
+
+<BaseLayout title="联系 — i2kai">
+  <div class="page-intro">
+    <h1>联系</h1>
+    <p>欢迎通过以下方式联系我。</p>
+  </div>
+
+  <section class="section">
+    <div class="section-grid">
+      {contacts.map((contact) => (
+        <div class="section-card">
+          <span class="eyebrow">{contact.label}</span>
+          <h3>{contact.value}</h3>
+          <a href={contact.href} target="_blank" rel="noopener">
+            前往 &rarr;
+          </a>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- 公众号占位 -->
+  <section class="section">
+    <div class="note-box" style="text-align: center; padding: 2rem;">
+      <h3>公众号</h3>
+      <p>公众号二维码或更多联系方式后续补充。</p>
+    </div>
+  </section>
+</BaseLayout>
