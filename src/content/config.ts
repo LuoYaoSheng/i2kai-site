@@ -8,6 +8,9 @@ const blog = defineCollection({
     description: z.string(),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
+    heroImage: z.string().optional(),
+    author: z.string().default('LuoYaoSheng'),
+    updated: z.date().optional(),
   }),
 });
 
@@ -23,6 +26,8 @@ const videos = defineCollection({
     duration: z.string().optional(),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
+    heroImage: z.string().optional(),
+    author: z.string().default('LuoYaoSheng'),
   }),
 });
 

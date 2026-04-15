@@ -1,16 +1,24 @@
 ---
 import '../styles/global.css';
+import { seoMeta } from '../data/site';
 
 interface Props {
   title: string;
   description?: string;
+  image?: string;
 }
 
-const { title, description = 'i2kai — 开发者 / 开源爱好者 / BLE & IoT 探索者' } = Astro.props;
+const {
+  title,
+  description = 'i2kai — 开发者 / 开源爱好者 / BLE & IoT 探索者',
+  image,
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, seoMeta.siteUrl);
+const ogImage = image || seoMeta.ogImage;
 
 const navItems = [
   { label: '首页', href: '/' },
-  { label: '项目', href: '/projects' },
   { label: '关于', href: '/about' },
   { label: '博客', href: '/blog' },
   { label: '视频', href: '/videos' },
@@ -28,6 +36,28 @@ const currentPath = Astro.url.pathname;
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Canonical -->
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={seoMeta.siteName} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(ogImage, seoMeta.siteUrl)} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:locale" content="zh_CN" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <!-- Extra SEO -->
+    <meta name="keywords" content={seoMeta.keywords} />
+    <meta name="author" content={seoMeta.author} />
+    <meta name="theme-color" content={seoMeta.themeColor} />
   </head>
   <body>
     <div class="site-shell">

@@ -6,14 +6,94 @@ export const siteMeta = {
   heroNote: '用真实项目记录 BLE、IoT 和桌面工具的开发旅程。',
 };
 
+// SEO 元数据常量
+export const seoMeta = {
+  siteUrl: 'https://i2kai.com',
+  siteName: 'i2kai',
+  author: 'LuoYaoSheng',
+  keywords: 'i2kai, LuoYaoSheng, 独立开发者, 开源项目, BLE, IoT, 桌面工具, Smart BLE, RedisPilot',
+  themeColor: '#9f2f16',
+  ogImage: '/favicon.svg', // 默认 OG 图片，后续替换为专用社交分享图
+};
+
 // 个人信息
 export const personalInfo = {
   name: 'LuoYaoSheng',
   alias: 'i2kai',
   bio: '独立开发者，专注于 BLE、IoT 和桌面工具开发。维护多个开源项目，相信「先体验，再看教程，再读源码」的学习方式。',
+  tagline: '先体验，再学习，再读源码',
   location: '中国',
   roles: ['独立开发者', '开源维护者', 'BLE / IoT 探索者', '桌面工具构建者'],
 };
+
+// 开发哲学
+export const philosophy = [
+  {
+    title: '先体验',
+    description: '先跑起来、先扫码、先用工具。感受问题比理解原理更先一步。',
+  },
+  {
+    title: '再学习',
+    description: '带着真实体验去看文档、教程和协议，学习才有锚点。',
+  },
+  {
+    title: '最后读源码',
+    description: '知道了要解决什么问题之后，再读源码，比直接啃仓库高效得多。',
+  },
+];
+
+// 成长时间线
+export const timeline = [
+  {
+    year: '2024',
+    title: '独立开发',
+    description: '围绕 BLE、IoT 和桌面工具构建开源项目体系，启动 Smart BLE 和 Open IoT Platform。',
+  },
+  {
+    year: '2023',
+    title: 'BLE 与 IoT 深入',
+    description: '深入蓝牙低功耗协议，完成跨平台 BLE 调试工具的多实现对照。',
+  },
+  {
+    year: '2022',
+    title: '全栈工程积累',
+    description: '服务端架构、移动端开发和桌面工具构建经验积累，开始探索 Flutter 和 Tauri。',
+  },
+];
+
+// 精选项目（首页只展示代表作）
+export const featuredProjects = [
+  {
+    name: 'Smart BLE',
+    id: 'smart-ble',
+    status: '主入口',
+    summary: '跨平台 BLE 调试工具。微信小程序可扫码直接体验，是理解 BLE 协议和多平台实现差异的最佳入口。',
+    repo: 'https://gitee.com/luoyaosheng/lys-smart-ble',
+    github: 'https://github.com/LuoYaoSheng/smart-ble',
+    docs: 'https://lightble.i2kai.com',
+    tags: ['BLE', 'IoT', '小程序', '跨平台'],
+  },
+  {
+    name: 'Open IoT Platform',
+    id: 'open-iot-platform',
+    status: '主入口',
+    summary: '从设备接入、BLE 配网到 MQTT 控制的完整 IoT 平台。ESP32 固件 + Go 服务端 + Flutter APP 全链路。',
+    repo: 'https://gitee.com/luoyaosheng/lys-iot-platform',
+    github: 'https://github.com/LuoYaoSheng/lys-iot-platform',
+    docs: 'https://iot.open.i2kai.com',
+    tags: ['IoT', 'MQTT', 'BLE配网', '全栈'],
+  },
+  {
+    name: 'RedisPilot',
+    id: 'redispilot',
+    status: '公开中',
+    summary: '本地优先的 Redis 桌面管理工具。基于 Tauri 构建，轻量、快速。',
+    repo: 'https://gitee.com/luoyaosheng/lys-redis-pilot',
+    github: 'https://github.com/LuoYaoSheng/lys-redis-pilot',
+    docs: 'https://redis.open.i2kai.com',
+    tags: ['Redis', '桌面工具', 'Tauri'],
+  },
+];
 
 // 技能领域
 export const skillAreas = [
@@ -35,7 +115,26 @@ export const skillAreas = [
   },
 ];
 
-// 项目列表
+// 经历
+export const experiences = [
+  {
+    period: '2024 — 至今',
+    role: '独立开发者 & 开源维护者',
+    description: '围绕 BLE、IoT 和桌面工具构建开源项目体系，维护 Smart BLE、Open IoT Platform、RedisPilot 等核心项目。专注「先体验、再学习」的开发理念，让每个项目都可以直接跑起来。',
+  },
+  {
+    period: '2022 — 2023',
+    role: 'BLE / IoT 深入与跨端探索',
+    description: '深入蓝牙低功耗协议栈，完成 Smart BLE 的多平台实现对照（小程序、iOS、Android、Flutter）。开始用 Flutter 和 Tauri 构建桌面和移动工具。',
+  },
+  {
+    period: '此前',
+    role: '全栈开发',
+    description: '积累服务端架构（Go/Java）、前端开发、数据库设计和 DevOps 经验。参与过多个从零到一的产品项目，理解从需求到上线的完整工程流程。',
+  },
+];
+
+// 项目列表（完整数据，projects 页使用）
 export const projectGroups = [
   {
     title: '核心主线',
@@ -161,20 +260,6 @@ export const projectGroups = [
   },
 ];
 
-// 经历（占位）
-export const experiences = [
-  {
-    period: '2024 — 至今',
-    role: '独立开发者 & 开源维护者',
-    description: '围绕 BLE、IoT 和桌面工具构建开源项目体系，维护 Smart BLE、Open IoT Platform 等核心项目。',
-  },
-  {
-    period: '此前',
-    role: '全栈开发',
-    description: '积累跨端开发、服务端架构和产品工程经验。',
-  },
-];
-
 // 联系方式
 export const contacts = [
   {
@@ -192,13 +277,6 @@ export const contacts = [
     value: 'i2kai@foxmail.com',
     href: 'mailto:i2kai@foxmail.com',
   },
-];
-
-// 精选项目（首页用）
-export const featuredProjects = [
-  projectGroups[0].items[0],
-  projectGroups[0].items[1],
-  projectGroups[1].items[0],
 ];
 
 // 文档站汇总（导航/链接用）

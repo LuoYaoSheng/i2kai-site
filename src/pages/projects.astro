@@ -1,28 +1,57 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import { projectGroups } from '../data/site';
+import { featuredProjects, docSites } from '../data/site';
 ---
 
 <BaseLayout title="项目 — i2kai">
   <div class="page-intro">
     <h1>项目</h1>
-    <p>围绕 BLE、IoT、桌面工具和效率工具的开源项目集合。</p>
+    <p>精选的开源项目推荐。所有项目的完整信息和文档请访问 <a href="https://open.i2kai.com" target="_blank" rel="noopener" style="color: var(--accent); font-weight: 600;">open.i2kai.com</a>。</p>
   </div>
 
-  {projectGroups.map((group) => (
-    <section class="section">
-      <div class="section-head">
-        <div>
-          <h2>{group.title}</h2>
-          <p>{group.intro}</p>
-        </div>
+  <!-- 精选推荐 -->
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <h2>精选推荐</h2>
+        <p>最具代表性的核心项目。</p>
       </div>
-      <div class="section-grid">
-        {group.items.map((project) => (
-          <ProjectCard {...project} />
-        ))}
+      <a href="https://open.i2kai.com" class="button-secondary" target="_blank" rel="noopener">全部项目 →</a>
+    </div>
+    <div class="section-grid">
+      {featuredProjects.map((project) => (
+        <ProjectCard {...project} />
+      ))}
+    </div>
+  </section>
+
+  <!-- 文档站快速入口 -->
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <h2>文档站入口</h2>
+        <p>每个项目都有独立的文档站，包含使用指南和技术文档。</p>
       </div>
-    </section>
-  ))}
+    </div>
+    <div class="section-grid">
+      {docSites.map((site) => (
+        <a href={site.url} target="_blank" rel="noopener" class="section-card doc-link-card">
+          <h3>{site.name}</h3>
+          <span class="mono">{new URL(site.url).hostname}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- 引导到 open.i2kai.com -->
+  <section class="section">
+    <div class="note-box" style="text-align: center; padding: 2rem;">
+      <h2>想看全部项目？</h2>
+      <p>所有项目的完整信息、学习路径和技术文章都在 open.i2kai.com。</p>
+      <div class="cta-row" style="justify-content: center;">
+        <a href="https://open.i2kai.com" class="button-primary" target="_blank" rel="noopener">前往 open.i2kai.com</a>
+      </div>
+    </div>
+  </section>
 </BaseLayout>

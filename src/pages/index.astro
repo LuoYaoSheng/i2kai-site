@@ -1,19 +1,30 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import { siteMeta, personalInfo, skillAreas, featuredProjects } from '../data/site';
+import { getCollection } from 'astro:content';
+import { siteMeta, personalInfo, philosophy, featuredProjects } from '../data/site';
+
+const recentPosts = await getCollection('blog', ({ data }) => !data.draft);
+recentPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const latestPosts = recentPosts.slice(0, 3);
+
+const recentVideos = await getCollection('videos', ({ data }) => !data.draft);
+recentVideos.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const latestVideos = recentVideos.slice(0, 3);
+
+const hasRecentContent = latestPosts.length > 0 || latestVideos.length > 0;
 ---
 
 <BaseLayout title={`${siteMeta.name} — ${siteMeta.title}`}>
-  <!-- Hero -->
+  <!-- Hero: 个人标语 -->
   <section class="hero">
     <div class="hero-main">
-      <span class="eyebrow">i2kai</span>
-      <h1>{personalInfo.alias}</h1>
-      <p class="hero-copy">{siteMeta.heroNote}</p>
+      <span class="eyebrow">{personalInfo.alias}</span>
+      <h1>{personalInfo.tagline}</h1>
+      <p class="hero-copy">{personalInfo.bio}</p>
       <div class="cta-row">
-        <a href="/projects" class="button-primary">查看项目</a>
-        <a href="/about" class="button-secondary">了解更多</a>
+        <a href="/about" class="button-primary">了解更多</a>
+        <a href="/contact" class="button-secondary">联系我</a>
       </div>
     </div>
     <div class="hero-side">
@@ -27,14 +38,30 @@ import { siteMeta, personalInfo, skillAreas, featuredProjects } from '../data/si
     </div>
   </section>
 
+  <!-- 个人理念 -->
+  <section class="section">
+    <div class="section-head">
+      <h2>我的开发理念</h2>
+    </div>
+    <div class="philosophy-grid">
+      {philosophy.map((item, i) => (
+        <div class="philosophy-card">
+          <span class="philosophy-step">{i + 1}</span>
+          <h3>{item.title}</h3>
+          <p>{item.description}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
   <!-- 精选项目 -->
   <section class="section">
     <div class="section-head">
       <div>
         <h2>精选项目</h2>
-        <p>围绕 BLE、IoT 和桌面工具的开源项目。</p>
+        <p>代表性的开源项目，更多项目请访问 open.i2kai.com。</p>
       </div>
-      <a href="/projects" class="button-secondary">全部项目</a>
+      <a href="https://open.i2kai.com" class="button-secondary" target="_blank" rel="noopener">全部项目 →</a>
     </div>
     <div class="section-grid">
       {featuredProjects.map((project) => (
@@ -43,24 +70,32 @@ import { siteMeta, personalInfo, skillAreas, featuredProjects } from '../data/si
     </div>
   </section>
 
-  <!-- 专业领域 -->
-  <section class="section">
-    <div class="section-head">
-      <div>
-        <h2>专业领域</h2>
+  <!-- 最近动态 -->
+  {hasRecentContent && (
+    <section class="section">
+      <div class="section-head">
+        <h2>最近动态</h2>
       </div>
-    </div>
-    <div class="hero-grid">
-      {skillAreas.map((area) => (
-        <div class="metric">
-          <strong>{area.title}</strong>
-          <p>{area.description}</p>
-        </div>
-      ))}
-    </div>
-  </section>
+      <div class="recent-activity">
+        {latestPosts.map((post) => (
+          <a href={`/blog/${post.slug}`} class="activity-item">
+            <span class="activity-tag">博客</span>
+            <span class="activity-title">{post.data.title}</span>
+            <span class="activity-date mono">{post.data.date.toLocaleDateString('zh-CN')}</span>
+          </a>
+        ))}
+        {latestVideos.map((video) => (
+          <a href={`/videos/${video.slug}`} class="activity-item">
+            <span class="activity-tag">视频</span>
+            <span class="activity-title">{video.data.title}</span>
+            <span class="activity-date mono">{video.data.date.toLocaleDateString('zh-CN')}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
 
-  <!-- CTA -->
+  <!-- 联系 CTA -->
   <section class="section">
     <div class="note-box" style="text-align: center; padding: 2rem;">
       <h2>一起探索</h2>
