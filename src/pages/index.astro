@@ -62,14 +62,17 @@ const latestPost = recentPosts[0];
     </div>
   </section>
 
-  <!-- 代表项目 -->
+  <!-- 开源项目 -->
   <section class="home-section">
-    <h2 class="section-label">代表项目</h2>
+    <h2 class="section-label">开源项目</h2>
     <div class="projects-list">
       {featuredProjects.map((project) => (
         <a href={project.docs || project.repo} target="_blank" rel="noopener" class="project-row">
           <div class="project-row-main">
-            <span class="project-row-name">{project.name}</span>
+            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+              <span class="project-row-name">{project.name}</span>
+              <span class="tag-sm tag-opensource">开源</span>
+            </div>
             <span class="project-row-summary">{project.summary}</span>
           </div>
           <div class="project-row-tags">

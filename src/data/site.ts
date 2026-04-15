@@ -12,7 +12,7 @@ export const seoMeta = {
   siteName: 'i2kai',
   author: '罗耀生',
   keywords: 'i2kai, 罗耀生, 物联网架构, 智慧城市, 独立开发者, 开源项目, BLE, IoT, 桌面工具, Smart BLE, RedisPilot',
-  themeColor: '#9f2f16',
+  themeColor: '#3b82f6',
   ogImage: '/favicon.svg',
 };
 

@@ -3,8 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import { featuredProjects, projectGroups, docSites } from '../data/site';
 
-// 企业项目和其他项目组（没有 repo/docs 链接的用不同渲染方式）
-const openSourceGroups = projectGroups.filter(g => g.title !== '企业级项目');
+const openSourceGroups = projectGroups.filter(g => g.title !== '企业级项目' && g.title !== '其他个人项目');
 const enterpriseGroup = projectGroups.find(g => g.title === '企业级项目');
 const otherGroup = projectGroups.find(g => g.title === '其他个人项目');
 ---
@@ -15,35 +14,6 @@ const otherGroup = projectGroups.find(g => g.title === '其他个人项目');
     <p>开源项目、企业级项目和个人产品的完整展示。</p>
   </div>
 
-  <!-- 企业级项目 -->
-  {enterpriseGroup && (
-    <section class="section">
-      <div class="section-head">
-        <div>
-          <h2>{enterpriseGroup.title}</h2>
-          <p>{enterpriseGroup.intro}</p>
-        </div>
-      </div>
-      <div class="section-grid">
-        {enterpriseGroup.items.map((project) => (
-          <div class="section-card">
-            <div class="meta-row">
-              <span class="status-chip">{project.status}</span>
-              <div class="meta-row" style="margin-bottom:0">
-                {project.tags.map((tag) => (
-                  <span class="meta-pill">{tag}</span>
-                ))}
-              </div>
-            </div>
-            <h3>{project.name}</h3>
-            <p>{project.summary}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  )}
-
-  <!-- 开源项目分组 -->
   {openSourceGroups.map((group) => (
     <section class="section">
       <div class="section-head">
@@ -60,7 +30,33 @@ const otherGroup = projectGroups.find(g => g.title === '其他个人项目');
     </section>
   ))}
 
-  <!-- 其他个人项目 -->
+  {enterpriseGroup && (
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2>{enterpriseGroup.title}</h2>
+          <p>{enterpriseGroup.intro}</p>
+        </div>
+      </div>
+      <div class="section-grid">
+        {enterpriseGroup.items.map((project) => (
+          <div class="section-card">
+            <div class="meta-row">
+              <span class="tag-sm tag-enterprise">企业</span>
+              <div class="meta-row" style="margin-bottom:0">
+                {project.tags.map((tag) => (
+                  <span class="meta-pill">{tag}</span>
+                ))}
+              </div>
+            </div>
+            <h3>{project.name}</h3>
+            <p>{project.summary}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
   {otherGroup && (
     <section class="section">
       <div class="section-head">
@@ -73,7 +69,7 @@ const otherGroup = projectGroups.find(g => g.title === '其他个人项目');
         {otherGroup.items.map((project) => (
           <div class="section-card">
             <div class="meta-row">
-              <span class="status-chip">{project.status}</span>
+              <span class="tag-sm tag-online">已上线</span>
               <div class="meta-row" style="margin-bottom:0">
                 {project.tags.map((tag) => (
                   <span class="meta-pill">{tag}</span>
@@ -91,7 +87,6 @@ const otherGroup = projectGroups.find(g => g.title === '其他个人项目');
     </section>
   )}
 
-  <!-- 文档站快速入口 -->
   <section class="section">
     <div class="section-head">
       <div>

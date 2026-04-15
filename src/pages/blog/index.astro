@@ -9,33 +9,23 @@ const posts = allPosts.sort((a, b) => b.data.date.getTime() - a.data.date.getTim
 <BaseLayout title="博客 — i2kai">
   <div class="page-intro">
     <h1>博客</h1>
-    <p>技术文章、项目思考和开发笔记。</p>
+    <p>技术文章、项目动态和开发随想。</p>
   </div>
 
   {posts.length > 0 ? (
-    <section class="section">
-      <div class="section-grid">
-        {posts.map((post) => (
-          <article class="blog-card">
-            <div class="meta-row">
-              <span class="mono">
-                {post.data.date.toLocaleDateString('zh-CN')}
-              </span>
-            </div>
-            <h3>{post.data.title}</h3>
-            <p>{post.data.description}</p>
-            {post.data.tags.length > 0 && (
-              <div class="meta-row">
-                {post.data.tags.map((tag: string) => (
-                  <span class="meta-pill">{tag}</span>
-                ))}
-              </div>
+    <div class="blog-list">
+      {posts.map((post) => (
+        <a href={`/blog/${post.slug}`} class="blog-list-item">
+          <div>
+            <span class="blog-item-title">{post.data.title}</span>
+            {post.data.description && (
+              <p style="font-size:0.85rem;margin:0.25rem 0 0;color:var(--muted);">{post.data.description}</p>
             )}
-            <a href={`/blog/${post.id}`}>阅读全文 &rarr;</a>
-          </article>
-        ))}
-      </div>
-    </section>
+          </div>
+          <span class="blog-item-date mono">{post.data.date.toLocaleDateString('zh-CN')}</span>
+        </a>
+      ))}
+    </div>
   ) : (
     <div class="empty-state">
       <p>博客文章即将到来，敬请期待。</p>

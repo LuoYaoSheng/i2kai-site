@@ -15,6 +15,7 @@ const { name, status, summary, repo, github, docs, tags = [] } = Astro.props;
 
 <div class="project-card">
   <div class="meta-row">
+    <span class="tag-sm tag-opensource">开源</span>
     <span class="status-chip">{status}</span>
     {tags.map((tag) => (
       <span class="meta-pill">{tag}</span>
