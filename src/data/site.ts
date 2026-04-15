@@ -25,6 +25,7 @@ export const personalInfo = {
   tagline: '先体验，再学习，再读源码',
   location: '福建泉州',
   wechatPublic: '极客第一行',
+  wechatPublic2: '待补充（第二个公众号名称）',
   highlights: [
     { label: '年行业经验', value: '12+' },
     { label: '完成项目', value: '50+' },
@@ -303,6 +304,54 @@ export const projectGroups = [
         summary: '图标生成工具，服务项目资产生成。',
         repo: 'https://gitee.com/luoyaosheng/lys-icon-gen',
         tags: ['图标', '资产生成'],
+      },
+    ],
+  },
+  {
+    title: '企业级项目',
+    intro: '主导过的智慧城市与物联网企业级项目。',
+    items: [
+      {
+        name: '智慧消防物联网平台',
+        id: 'smart-fire',
+        status: '企业项目',
+        summary: '面向大型商业综合体和工业园区的智慧消防解决方案，实现消防设备全连接、实时监控和智能预警。落地 23 个工业园区，年度火情下降 65%。',
+        tags: ['物联网', '微服务', 'Go', '智慧城市'],
+      },
+      {
+        name: '智慧校园管理系统',
+        id: 'smart-campus',
+        status: '企业项目',
+        summary: '为学校提供一站式智慧校园解决方案，集成考勤、安防、消防、能耗监控等 8 大模块，落地 12 所学校。',
+        tags: ['Java', 'Spring Boot', 'React Native', '智慧城市'],
+      },
+      {
+        name: '智慧停车管理系统',
+        id: 'smart-parking',
+        status: '企业项目',
+        summary: '基于计算机视觉和物联网技术的智能停车解决方案，支持车位检测、车牌识别、自动收费，日均处理 10万+ 订单。',
+        tags: ['Python', 'TensorFlow', 'OpenCV', '物联网'],
+      },
+    ],
+  },
+  {
+    title: '其他个人项目',
+    intro: '更多个人开发的产品和应用。',
+    items: [
+      {
+        name: '萌猫圈',
+        id: 'mengmaoquan',
+        status: '已上线',
+        summary: '治愈系萌宠图片分享应用，汇集海量精选萌宠图片，支持收藏分享、关注作者等功能。',
+        repo: 'https://cat.i2kai.com',
+        tags: ['uniapp', 'Go', 'Vue3', '社交应用'],
+      },
+      {
+        name: 'IconSize',
+        id: 'iconsize',
+        status: '已上线',
+        summary: '快速批量生成图标的桌面工具，支持安卓、iOS、Mac、Windows 等平台图标的生成。',
+        tags: ['Electron', 'JavaScript', '桌面开发'],
       },
     ],
   },

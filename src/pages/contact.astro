@@ -28,12 +28,23 @@ import { contacts, personalInfo } from '../data/site';
     <div class="section-head">
       <h2>微信公众号</h2>
     </div>
-    <div class="wechat-qr-box">
-      <img src="/wechat-qr.jpg" alt="微信公众号二维码" width="160" height="160" />
-      <div class="wechat-qr-text">
-        <strong>{personalInfo.wechatPublic}</strong>
-        <p>分享物联网、微服务、分布式系统等领域的专业知识与实战经验。</p>
-        <p>技术文章分享 · 项目实战经验 · 行业动态分析 · 电子书资源</p>
+    <div class="wechat-grid">
+      <div class="wechat-qr-box">
+        <img src="/wechat-qr.jpg" alt="极客第一行二维码" width="140" height="140" />
+        <div class="wechat-qr-text">
+          <strong>{personalInfo.wechatPublic}</strong>
+          <p>分享物联网、微服务、分布式系统等领域的专业知识与实战经验。</p>
+          <p>技术文章 · 项目实战 · 行业动态 · 电子书资源</p>
+        </div>
+      </div>
+      <div class="wechat-qr-box">
+        <div class="qr-placeholder">
+          <span>二维码<br/>待补充</span>
+        </div>
+        <div class="wechat-qr-text">
+          <strong>{personalInfo.wechatPublic2}</strong>
+          <p>第二个公众号，二维码和名称后续补充。</p>
+        </div>
       </div>
     </div>
   </section>

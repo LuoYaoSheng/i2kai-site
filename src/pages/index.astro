@@ -98,11 +98,20 @@ const latestPost = recentPosts[0];
   <!-- 公众号 -->
   <section class="home-section">
     <h2 class="section-label">公众号</h2>
-    <div class="wechat-qr-box">
-      <img src="/wechat-qr.jpg" alt="微信公众号二维码" width="140" height="140" />
-      <div class="wechat-qr-text">
-        <strong>{personalInfo.wechatPublic}</strong>
-        <p>分享物联网、微服务、分布式系统等领域的专业知识与实战经验。</p>
+    <div class="wechat-grid">
+      <div class="wechat-qr-box">
+        <img src="/wechat-qr.jpg" alt="极客第一行二维码" width="120" height="120" />
+        <div class="wechat-qr-text">
+          <strong>{personalInfo.wechatPublic}</strong>
+          <p>物联网、微服务、分布式系统实战经验。</p>
+        </div>
+      </div>
+      <div class="wechat-qr-box">
+        <div class="qr-placeholder"><span>待补充</span></div>
+        <div class="wechat-qr-text">
+          <strong>{personalInfo.wechatPublic2}</strong>
+          <p>二维码后续补充。</p>
+        </div>
       </div>
     </div>
   </section>

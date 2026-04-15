@@ -855,6 +855,27 @@ p {
   flex-shrink: 0;
 }
 
+.wechat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.qr-placeholder {
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+  border-radius: 0.75rem;
+  background: rgba(22, 18, 15, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-align: center;
+  border: 1px dashed var(--line);
+}
+
 .wechat-qr-text strong {
   display: block;
   font-size: 1.1rem;
@@ -1111,6 +1132,10 @@ p {
   .wechat-qr-box {
     flex-direction: column;
     text-align: center;
+  }
+
+  .wechat-grid {
+    grid-template-columns: 1fr;
   }
 
   .exp-header {
