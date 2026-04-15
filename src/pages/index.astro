@@ -1,110 +1,89 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ProjectCard from '../components/ProjectCard.astro';
 import { getCollection } from 'astro:content';
-import { siteMeta, personalInfo, philosophy, featuredProjects } from '../data/site';
+import { siteMeta, personalInfo, featuredProjects } from '../data/site';
 
 const recentPosts = await getCollection('blog', ({ data }) => !data.draft);
 recentPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const latestPosts = recentPosts.slice(0, 3);
-
-const recentVideos = await getCollection('videos', ({ data }) => !data.draft);
-recentVideos.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const latestVideos = recentVideos.slice(0, 3);
-
-const hasRecentContent = latestPosts.length > 0 || latestVideos.length > 0;
+const latestPost = recentPosts[0];
 ---
 
 <BaseLayout title={`${siteMeta.name} — ${siteMeta.title}`}>
-  <!-- Hero: 个人标语 -->
-  <section class="hero">
-    <div class="hero-main">
-      <span class="eyebrow">{personalInfo.alias}</span>
-      <h1>{personalInfo.tagline}</h1>
-      <p class="hero-copy">{personalInfo.bio}</p>
-      <div class="cta-row">
-        <a href="/about" class="button-primary">了解更多</a>
-        <a href="/contact" class="button-secondary">联系我</a>
-      </div>
-    </div>
-    <div class="hero-side">
-      <div class="hero-stack">
-        {personalInfo.roles.map((role) => (
-          <div class="note-box">
-            <strong>{role}</strong>
-          </div>
-        ))}
-      </div>
+  <!-- Hero: 大签名 -->
+  <section class="hero-personal">
+    <p class="hero-greeting">你好，我是</p>
+    <h1 class="hero-name">{personalInfo.name}</h1>
+    <p class="hero-alias">@{personalInfo.alias}</p>
+    <p class="hero-one-liner">
+      独立开发者，做 BLE、IoT 和桌面工具的开源项目。<br/>
+      <em class="hero-motto">「先体验，再学习，再读源码。」</em>
+    </p>
+    <div class="hero-links">
+      <a href="https://github.com/LuoYaoSheng" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://gitee.com/luoyaosheng" target="_blank" rel="noopener">Gitee</a>
+      <a href="/about">关于我</a>
+      <a href="/contact">联系</a>
     </div>
   </section>
 
-  <!-- 个人理念 -->
-  <section class="section">
-    <div class="section-head">
-      <h2>我的开发理念</h2>
-    </div>
-    <div class="philosophy-grid">
-      {philosophy.map((item, i) => (
-        <div class="philosophy-card">
-          <span class="philosophy-step">{i + 1}</span>
-          <h3>{item.title}</h3>
-          <p>{item.description}</p>
+  <!-- 我做什么 -->
+  <section class="home-section">
+    <h2 class="section-label">我做什么</h2>
+    <div class="what-grid">
+      <div class="what-item">
+        <span class="what-emoji">📡</span>
+        <div>
+          <strong>BLE & IoT</strong>
+          <p>跨平台 BLE 调试工具、ESP32 固件、MQTT 平台</p>
         </div>
-      ))}
+      </div>
+      <div class="what-item">
+        <span class="what-emoji">🖥️</span>
+        <div>
+          <strong>桌面工具</strong>
+          <p>Redis 管理、数据库客户端、SSH 运维工作台</p>
+        </div>
+      </div>
+      <div class="what-item">
+        <span class="what-emoji">📱</span>
+        <div>
+          <strong>移动 & 小程序</strong>
+          <p>Flutter 跨平台、微信小程序 BLE 工具</p>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- 精选项目 -->
-  <section class="section">
-    <div class="section-head">
-      <div>
-        <h2>精选项目</h2>
-        <p>代表性的开源项目，更多项目请访问 open.i2kai.com。</p>
-      </div>
-      <a href="https://open.i2kai.com" class="button-secondary" target="_blank" rel="noopener">全部项目 →</a>
-    </div>
-    <div class="section-grid">
+  <!-- 代表项目 -->
+  <section class="home-section">
+    <h2 class="section-label">代表项目</h2>
+    <div class="projects-list">
       {featuredProjects.map((project) => (
-        <ProjectCard {...project} />
+        <a href={project.docs || project.repo} target="_blank" rel="noopener" class="project-row">
+          <div class="project-row-main">
+            <span class="project-row-name">{project.name}</span>
+            <span class="project-row-summary">{project.summary}</span>
+          </div>
+          <div class="project-row-tags">
+            {project.tags.map((tag) => (
+              <span class="tag-sm">{tag}</span>
+            ))}
+          </div>
+        </a>
       ))}
     </div>
+    <a href="https://open.i2kai.com" class="more-link" target="_blank" rel="noopener">所有项目 → open.i2kai.com</a>
   </section>
 
-  <!-- 最近动态 -->
-  {hasRecentContent && (
-    <section class="section">
-      <div class="section-head">
-        <h2>最近动态</h2>
-      </div>
-      <div class="recent-activity">
-        {latestPosts.map((post) => (
-          <a href={`/blog/${post.slug}`} class="activity-item">
-            <span class="activity-tag">博客</span>
-            <span class="activity-title">{post.data.title}</span>
-            <span class="activity-date mono">{post.data.date.toLocaleDateString('zh-CN')}</span>
-          </a>
-        ))}
-        {latestVideos.map((video) => (
-          <a href={`/videos/${video.slug}`} class="activity-item">
-            <span class="activity-tag">视频</span>
-            <span class="activity-title">{video.data.title}</span>
-            <span class="activity-date mono">{video.data.date.toLocaleDateString('zh-CN')}</span>
-          </a>
-        ))}
-      </div>
+  <!-- 最近写的内容 -->
+  {latestPost && (
+    <section class="home-section">
+      <h2 class="section-label">最近写的内容</h2>
+      <a href={`/blog/${latestPost.slug}`} class="post-teaser">
+        <span class="post-teaser-title">{latestPost.data.title}</span>
+        <span class="post-teaser-date mono">{latestPost.data.date.toLocaleDateString('zh-CN')}</span>
+      </a>
+      <a href="/blog" class="more-link">更多文章</a>
     </section>
   )}
-
-  <!-- 联系 CTA -->
-  <section class="section">
-    <div class="note-box" style="text-align: center; padding: 2rem;">
-      <h2>一起探索</h2>
-      <p>关注开源项目、技术博客和视频内容。</p>
-      <div class="cta-row" style="justify-content: center;">
-        <a href="/blog" class="button-primary">阅读博客</a>
-        <a href="/videos" class="button-secondary">观看视频</a>
-        <a href="/contact" class="button-secondary">联系方式</a>
-      </div>
-    </div>
-  </section>
 </BaseLayout>
