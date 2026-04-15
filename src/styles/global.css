@@ -129,6 +129,42 @@ img {
   color: var(--accent);
 }
 
+/* ---------- Theme Toggle ---------- */
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  cursor: pointer;
+  transition: all var(--transition);
+  font-size: 1.1rem;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.theme-icon-dark {
+  display: none;
+}
+
+html.dark .theme-icon-light {
+  display: none;
+}
+
+html.dark .theme-icon-dark {
+  display: inline;
+}
+
 /* ---------- Footer ---------- */
 
 .site-footer {
