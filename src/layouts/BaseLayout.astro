@@ -72,6 +72,10 @@ const currentPath = Astro.url.pathname;
               {item.label}
             </a>
           ))}
+          <button class="theme-toggle" id="theme-toggle" aria-label="切换暗色模式" title="切换暗色模式">
+            <span class="theme-icon-light">☀️</span>
+            <span class="theme-icon-dark">🌙</span>
+          </button>
         </nav>
       </header>
       <main>
@@ -96,4 +100,64 @@ const currentPath = Astro.url.pathname;
     color: var(--ink);
     font-weight: 600;
   }
+
+  /* 主题切换按钮：默认显示 ☀️（亮色下暗示可切暗色），暗色下显示 🌙 */
+  .theme-icon-dark {
+    display: none;
+  }
+
+  html.dark .theme-icon-light {
+    display: none;
+  }
+
+  html.dark .theme-icon-dark {
+    display: inline;
+  }
+
+  /* 防止闪烁：内联脚本先执行，组件样式后加载 */
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    cursor: pointer;
+    transition: all var(--transition);
+    font-size: 1.1rem;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  .theme-toggle:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
 </style>
+
+<!-- 内联脚本：防闪烁 + 主题切换逻辑 -->
+<script is:inline>
+  (function () {
+    const key = 'i2kai-theme';
+    const stored = localStorage.getItem(key);
+    if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    }
+  })();
+</script>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const btn = document.getElementById('theme-toggle');
+    const key = 'i2kai-theme';
+    if (!btn) return;
+
+    btn.addEventListener('click', () => {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem(key, isDark ? 'dark' : 'light');
+    });
+  });
+</script>

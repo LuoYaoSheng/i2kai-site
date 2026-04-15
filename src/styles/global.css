@@ -21,6 +21,41 @@
   --radius: 12px;
   --radius-lg: 16px;
   --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --code-bg: #1e293b;
+  --code-fg: #e2e8f0;
+  --tag-green-bg: #dcfce7;
+  --tag-green-fg: #15803d;
+  --tag-green-dot: #22c55e;
+  --tag-amber-bg: #fef3c7;
+  --tag-amber-fg: #92400e;
+  --tag-purple-bg: #ede9fe;
+  --tag-purple-fg: #6d28d9;
+}
+
+/* ═══ Dark Theme ═══ */
+
+html.dark {
+  --bg: #0f172a;
+  --bg-alt: #1e293b;
+  --ink: #f1f5f9;
+  --muted: #94a3b8;
+  --line: #334155;
+  --accent: #60a5fa;
+  --accent-dark: #93bbfd;
+  --accent-soft: rgba(96, 165, 250, 0.15);
+  --accent-gradient: linear-gradient(135deg, #60a5fa, #3b82f6);
+  --panel: #1e293b;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+  --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  --code-bg: #0f172a;
+  --code-fg: #e2e8f0;
+  --tag-green-bg: rgba(34, 197, 94, 0.15);
+  --tag-green-fg: #86efac;
+  --tag-green-dot: #22c55e;
+  --tag-amber-bg: rgba(245, 158, 11, 0.15);
+  --tag-amber-fg: #fcd34d;
+  --tag-purple-bg: rgba(139, 92, 246, 0.15);
+  --tag-purple-fg: #c4b5fd;
 }
 
 * {
@@ -37,6 +72,7 @@ body {
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 a {
@@ -274,6 +310,10 @@ p {
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
 }
 
+html.dark .hero-links a:hover {
+  box-shadow: 0 4px 12px rgba(96, 165, 250, 0.2);
+}
+
 /* ---------- Home Section ---------- */
 
 .home-section {
@@ -387,8 +427,8 @@ p {
 
 /* 开源标签 */
 .tag-opensource {
-  background: #dcfce7;
-  color: #15803d;
+  background: var(--tag-green-bg);
+  color: var(--tag-green-fg);
 }
 
 .tag-opensource::before {
@@ -397,20 +437,20 @@ p {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #22c55e;
+  background: var(--tag-green-dot);
   margin-right: 4px;
 }
 
 /* 企业标签 */
 .tag-enterprise {
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--tag-amber-bg);
+  color: var(--tag-amber-fg);
 }
 
 /* 已上线标签 */
 .tag-online {
-  background: #ede9fe;
-  color: #6d28d9;
+  background: var(--tag-purple-bg);
+  color: var(--tag-purple-fg);
 }
 
 .more-link {
@@ -788,18 +828,18 @@ p {
 }
 
 .status-chip-chip-opensource {
-  background: #dcfce7;
-  color: #15803d;
+  background: var(--tag-green-bg);
+  color: var(--tag-green-fg);
 }
 
 .status-chip-enterprise {
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--tag-amber-bg);
+  color: var(--tag-amber-fg);
 }
 
 .status-chip-online {
-  background: #ede9fe;
-  color: #6d28d9;
+  background: var(--tag-purple-bg);
+  color: var(--tag-purple-fg);
 }
 
 .meta-pill {
@@ -839,7 +879,7 @@ p {
   padding: 1rem;
   border-radius: var(--radius);
   border: 1px solid var(--accent-soft);
-  background: rgba(59, 130, 246, 0.04);
+  background: var(--accent-soft);
 }
 
 /* ---------- Mono ---------- */
@@ -892,8 +932,8 @@ p {
 .prose pre {
   padding: 1rem 1.2rem;
   border-radius: var(--radius);
-  background: #1e293b;
-  color: #e2e8f0;
+  background: var(--code-bg);
+  color: var(--code-fg);
   overflow-x: auto;
   font-size: 0.9rem;
 }
@@ -937,7 +977,7 @@ p {
   padding-bottom: 56.25%;
   border-radius: var(--radius);
   overflow: hidden;
-  background: #1e293b;
+  background: var(--code-bg);
   margin: 1.5rem 0;
 }
 
