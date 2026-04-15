@@ -6,10 +6,11 @@ interface Props {
   summary: string;
   repo: string;
   github?: string;
+  docs?: string;
   tags?: string[];
 }
 
-const { name, status, summary, repo, github, tags = [] } = Astro.props;
+const { name, status, summary, repo, github, docs, tags = [] } = Astro.props;
 ---
 
 <div class="project-card">
@@ -22,6 +23,11 @@ const { name, status, summary, repo, github, tags = [] } = Astro.props;
   <h3>{name}</h3>
   <p>{summary}</p>
   <div class="cta-row">
+    {docs && (
+      <a href={docs} target="_blank" rel="noopener" class="button-primary">
+        文档站
+      </a>
+    )}
     <a href={repo} target="_blank" rel="noopener" class="button-secondary">
       Gitee
     </a>
