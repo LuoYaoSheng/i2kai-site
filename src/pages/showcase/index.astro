@@ -1,0 +1,145 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { projectShowcaseCases, showcaseMeta } from '../../data/site';
+
+const typePriority = {
+  '年度进度': 0,
+  '个人产品': 1,
+  '交付案例': 2,
+  '企业案例': 3,
+  '公开站点': 4,
+  '开源项目': 5,
+};
+
+const orderedCases = [...projectShowcaseCases].sort((a, b) => {
+  const aPriority = typePriority[a.type] ?? 9;
+  const bPriority = typePriority[b.type] ?? 9;
+
+  if (aPriority !== bPriority) return aPriority - bPriority;
+  return a.title.localeCompare(b.title, 'zh-CN');
+});
+
+const categories = ['全部', ...Array.from(new Set(orderedCases.map((item) => item.category)))];
+const featuredCases = orderedCases.filter((item) => item.featured).slice(0, 5);
+---
+
+<BaseLayout title="项目展示专题 — i2kai" description={showcaseMeta.description}>
+  <div class="showcase-hero">
+    <span class="eyebrow">Project Showcase</span>
+    <h1>{showcaseMeta.title}</h1>
+    <p>{showcaseMeta.description}</p>
+    <div class="showcase-stats">
+      {showcaseMeta.stats.map((item) => (
+        <div>
+          <strong>{item.value}</strong>
+          <span>{item.label}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <section class="showcase-featured" aria-label="精选项目">
+    {featuredCases.map((item, index) => (
+      <a
+        href={`/showcase/${item.slug}`}
+        class:list={['showcase-feature-card', index === 0 && 'is-large']}
+      >
+        {item.image && (
+          <img src={item.image} alt={item.title} loading={index === 0 ? 'eager' : 'lazy'} />
+        )}
+        <div class="showcase-feature-copy">
+          <span>{item.type} / {item.category}</span>
+          <h2>{item.title}</h2>
+          <p>{item.summary}</p>
+        </div>
+      </a>
+    ))}
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <h2>全部项目档案</h2>
+        <p>按方向筛选，也可以搜索项目名称、技术栈或关键词。</p>
+      </div>
+    </div>
+
+    <div class="showcase-toolbar">
+      <div class="showcase-filters" role="list" aria-label="项目分类">
+        {categories.map((category) => (
+          <button
+            class:list={['showcase-filter', category === '全部' && 'active']}
+            type="button"
+            data-showcase-filter={category}
+          >
+            {category}
+          </button>
+        ))}
+      </div>
+      <label class="showcase-search">
+        <span>搜索</span>
+        <input id="showcase-search-input" type="search" placeholder="BLE、智慧城市、Go..." />
+      </label>
+    </div>
+
+    <div class="showcase-grid" id="showcase-grid">
+      {orderedCases.map((item) => (
+        <article
+          class="showcase-card"
+          data-showcase-card
+          data-category={item.category}
+          data-search={`${item.title} ${item.category} ${item.type} ${item.access} ${item.summary} ${item.technologies.join(' ')}`}
+        >
+          <div class="showcase-card-top">
+            <span class="tag-sm">{item.type}</span>
+            <span class="mono">{item.year}</span>
+          </div>
+          <h3>{item.title}</h3>
+          <span class="showcase-access">{item.access}</span>
+          <p>{item.summary}</p>
+          <div class="showcase-techs">
+            {item.technologies.slice(0, 4).map((tech) => (
+              <span>{tech}</span>
+            ))}
+          </div>
+          <a href={`/showcase/${item.slug}`}>查看档案</a>
+        </article>
+      ))}
+    </div>
+
+    <p class="showcase-empty" id="showcase-empty" hidden>没有匹配的项目。</p>
+  </section>
+
+  <script is:inline>
+    const filterButtons = Array.from(document.querySelectorAll('[data-showcase-filter]'));
+    const cards = Array.from(document.querySelectorAll('[data-showcase-card]'));
+    const searchInput = document.getElementById('showcase-search-input');
+    const emptyState = document.getElementById('showcase-empty');
+    let activeCategory = '全部';
+
+    function updateShowcase() {
+      const keyword = (searchInput?.value || '').trim().toLowerCase();
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const matchesCategory = activeCategory === '全部' || card.dataset.category === activeCategory;
+        const matchesSearch = !keyword || (card.dataset.search || '').toLowerCase().includes(keyword);
+        const visible = matchesCategory && matchesSearch;
+        card.hidden = !visible;
+        if (visible) visibleCount += 1;
+      });
+
+      if (emptyState) emptyState.hidden = visibleCount !== 0;
+    }
+
+    filterButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        activeCategory = button.dataset.showcaseFilter || '全部';
+        filterButtons.forEach((item) => item.classList.toggle('active', item === button));
+        updateShowcase();
+      });
+    });
+
+    searchInput?.addEventListener('input', updateShowcase);
+  </script>
+</BaseLayout>

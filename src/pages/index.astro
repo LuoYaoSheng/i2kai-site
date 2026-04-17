@@ -1,11 +1,30 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
-import { siteMeta, personalInfo, featuredProjects } from '../data/site';
+import { personalInfo, featuredProjects, projectShowcaseCases } from '../data/site';
 
 const recentPosts = await getCollection('blog', ({ data }) => !data.draft);
 recentPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const latestPost = recentPosts[0];
+const typePriority = {
+  '年度进度': 0,
+  '个人产品': 1,
+  '交付案例': 2,
+  '企业案例': 3,
+  '公开站点': 4,
+  '开源项目': 5,
+};
+
+const showcasePreview = [...projectShowcaseCases]
+  .sort((a, b) => {
+    const aPriority = typePriority[a.type] ?? 9;
+    const bPriority = typePriority[b.type] ?? 9;
+
+    if (aPriority !== bPriority) return aPriority - bPriority;
+    return a.title.localeCompare(b.title, 'zh-CN');
+  })
+  .filter((item) => item.featured)
+  .slice(0, 4);
 ---
 
 <BaseLayout title={`${personalInfo.name} — ${personalInfo.title}`}>
@@ -84,6 +103,24 @@ const latestPost = recentPosts[0];
       ))}
     </div>
     <a href="https://open.i2kai.com" class="more-link" target="_blank" rel="noopener">所有项目 → open.i2kai.com</a>
+  </section>
+
+  <!-- 项目展示 -->
+  <section class="home-section">
+    <h2 class="section-label">项目展示</h2>
+    <div class="home-showcase-grid">
+      {showcasePreview.map((item) => (
+        <a href={`/showcase/${item.slug}`} class="home-showcase-card">
+          {item.image && (
+            <img src={item.image} alt={item.title} loading="lazy" />
+          )}
+          <span>{item.type} / {item.category}</span>
+          <strong>{item.title}</strong>
+          <p>{item.summary}</p>
+        </a>
+      ))}
+    </div>
+    <a href="/showcase" class="more-link">项目展示专题</a>
   </section>
 
   <!-- 最近写的内容 -->

@@ -1,18 +1,28 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import { featuredProjects, projectGroups, docSites } from '../data/site';
+import { projectGroups, docSites, projectShowcaseCases } from '../data/site';
 
 const openSourceGroups = projectGroups.filter(g => g.title !== '企业级项目' && g.title !== '其他个人项目');
 const enterpriseGroup = projectGroups.find(g => g.title === '企业级项目');
 const otherGroup = projectGroups.find(g => g.title === '其他个人项目');
+const showcaseCount = projectShowcaseCases.length;
 ---
 
 <BaseLayout title="项目 — i2kai">
   <div class="page-intro">
     <h1>项目</h1>
-    <p>开源项目、企业级项目和个人产品的完整展示。</p>
+    <p>开源项目、个人产品、企业案例和交付经验的完整展示。</p>
   </div>
+
+  <section class="project-showcase-bridge">
+    <div>
+      <span class="eyebrow">Project Showcase</span>
+      <h2>项目展示专题</h2>
+      <p>从旧版 i2kai.com 迁入的项目档案，覆盖 {showcaseCount} 个产品和交付案例。</p>
+    </div>
+    <a href="/showcase">进入专题</a>
+  </section>
 
   {openSourceGroups.map((group) => (
     <section class="section">
@@ -90,8 +100,8 @@ const otherGroup = projectGroups.find(g => g.title === '其他个人项目');
   <section class="section">
     <div class="section-head">
       <div>
-        <h2>文档站入口</h2>
-        <p>每个开源项目都有独立的文档站。</p>
+        <h2>文档与产品入口</h2>
+        <p>部分项目有独立文档站或产品入口，按实际可访问状态整理。</p>
       </div>
     </div>
     <div class="section-grid">

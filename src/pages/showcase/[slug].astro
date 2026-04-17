@@ -1,0 +1,115 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { projectShowcaseCases } from '../../data/site';
+
+export function getStaticPaths() {
+  return projectShowcaseCases.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const image = project.image || undefined;
+const resources = project.resources || project.links || [];
+---
+
+<BaseLayout title={`${project.title} — 项目展示`} description={project.summary} image={image}>
+  <article class="case-detail">
+    <a class="case-back" href="/showcase">返回项目展示</a>
+
+    <header class="case-hero">
+      <div>
+        <span class="eyebrow">{project.type} / {project.category}</span>
+        <h1>{project.title}</h1>
+        <p>{project.summary}</p>
+        <div class="case-meta-grid">
+          <div>
+            <span>年份</span>
+            <strong>{project.year}</strong>
+          </div>
+          <div>
+            <span>角色</span>
+            <strong>{project.role}</strong>
+          </div>
+          <div>
+            <span>平台</span>
+            <strong>{project.platforms.join(' / ')}</strong>
+          </div>
+        </div>
+        <div class="case-access-note">
+          <span>访问方式</span>
+          <strong>{project.access}</strong>
+        </div>
+      </div>
+
+      {project.image && (
+        <img class="case-hero-image" src={project.image} alt={project.title} loading="eager" />
+      )}
+    </header>
+
+    {resources.length > 0 && (
+      <section class="case-section case-resource-section">
+        <h2>体验、下载与二维码</h2>
+        <div class="case-resources">
+          {resources.map((resource) => (
+            resource.kind === 'qrcode' ? (
+              <div class="case-resource-qr">
+                <img src={resource.image} alt={resource.label} loading="lazy" />
+                <div>
+                  <strong>{resource.label}</strong>
+                  {resource.note && <p>{resource.note}</p>}
+                </div>
+              </div>
+            ) : (
+              <a
+                href={resource.href}
+                target={resource.href?.startsWith('http') ? '_blank' : undefined}
+                rel={resource.href?.startsWith('http') ? 'noopener' : undefined}
+                class:list={['case-resource-link', resource.kind && `resource-${resource.kind}`]}
+              >
+                <span>{resource.kind === 'download' ? '下载' : resource.kind === 'source' ? '源码' : resource.kind === 'repo' ? '仓库' : resource.kind === 'site' ? '体验' : '入口'}</span>
+                <strong>{resource.label}</strong>
+              </a>
+            )
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="case-section">
+      <h2>项目背景</h2>
+      <p>{project.challenge}</p>
+    </section>
+
+    <section class="case-section">
+      <h2>解决方式</h2>
+      <p>{project.solution}</p>
+    </section>
+
+    <section class="case-section">
+      <h2>结果</h2>
+      <p>{project.result}</p>
+    </section>
+
+    <section class="case-section">
+      <h2>技术栈</h2>
+      <div class="case-tech-grid">
+        {project.technologies.map((tech) => (
+          <span>{tech}</span>
+        ))}
+      </div>
+    </section>
+
+    {project.gallery && project.gallery.length > 0 && (
+      <section class="case-section">
+        <h2>项目截图</h2>
+        <div class="case-gallery">
+          {project.gallery.map((src) => (
+            <img src={src} alt={`${project.title} 截图`} loading="lazy" />
+          ))}
+        </div>
+      </section>
+    )}
+  </article>
+</BaseLayout>
