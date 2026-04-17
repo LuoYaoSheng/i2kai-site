@@ -29,7 +29,8 @@ i2kai.com 个人官网，基于 Astro 5 纯静态站点。
 
 ## 域名
 - `i2kai.com` 通过 CNAME 文件指向 GitHub Pages
-- 子域名 `lightble.i2kai.com`、`cat.i2kai.com`、`iconsize.i2kai.com` 独立管理
+- 子域名 `lightble.i2kai.com`、`cat.i2kai.com` 独立管理
+- 开源项目子域名默认走 `*.open.i2kai.com`，例如 `icon.open.i2kai.com`
 
 ## 内容规范
 - 博客文章存放 `src/content/blog/`（Markdown，frontmatter 含 title/date/tags/description）
