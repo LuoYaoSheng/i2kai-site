@@ -95,14 +95,17 @@ const isActiveNav = (href: string) => href === '/' ? currentPath === '/' : curre
         <slot />
       </main>
       <footer class="site-footer">
-        <span>&copy; {new Date().getFullYear()} {seoMeta.author}</span>
-        <span>
-          <a href="https://github.com/LuoYaoSheng" target="_blank" rel="noopener">GitHub</a>
-          &nbsp;&middot;&nbsp;
-          <a href="https://gitee.com/luoyaosheng" target="_blank" rel="noopener">Gitee</a>
-          &nbsp;&middot;&nbsp;
+        <div class="footer-main">
+          <span>&copy; {new Date().getFullYear()} {seoMeta.author}</span>
+          <span>
+            <a href="https://github.com/LuoYaoSheng" target="_blank" rel="noopener">GitHub</a>
+            &nbsp;&middot;&nbsp;
+            <a href="https://gitee.com/luoyaosheng" target="_blank" rel="noopener">Gitee</a>
+          </span>
+        </div>
+        <div class="footer-beian">
           <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">闽ICP备2022003862号</a>
-        </span>
+        </div>
       </footer>
     </div>
   </body>
