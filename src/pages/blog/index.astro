@@ -6,7 +6,7 @@ const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 const posts = allPosts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 ---
 
-<BaseLayout title="博客 — i2kai">
+<BaseLayout title="博客 — 爱二开网">
   <div class="page-intro">
     <h1>博客</h1>
     <p>技术文章、项目动态和开发随想。</p>

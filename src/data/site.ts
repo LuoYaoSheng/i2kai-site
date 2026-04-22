@@ -1,6 +1,6 @@
 // 站点元信息
 export const siteMeta = {
-  name: 'i2kai',
+  name: '爱二开网',
   title: '物联网架构专家 / 全栈开发者 / 开源爱好者',
   description: '12年+全栈技术开发与管理经验，专注于物联网、智慧城市和开源项目。',
   heroNote: '用真实项目记录 BLE、IoT、桌面工具和个人产品的开发旅程。',
@@ -9,7 +9,7 @@ export const siteMeta = {
 // SEO 元数据常量
 export const seoMeta = {
   siteUrl: 'https://i2kai.com',
-  siteName: 'i2kai',
+  siteName: '爱二开网',
   author: '罗耀生',
   keywords: 'i2kai, 罗耀生, 物联网架构, 智慧城市, 独立开发者, 开源项目, 项目展示, BLE, IoT, 桌面工具, Smart BLE, RedisPilot',
   themeColor: '#3b82f6',

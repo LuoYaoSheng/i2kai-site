@@ -6,7 +6,7 @@ const allVideos = await getCollection('videos', ({ data }) => !data.draft);
 const videos = allVideos.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 ---
 
-<BaseLayout title="视频 — i2kai">
+<BaseLayout title="视频 — 爱二开网">
   <div class="page-intro">
     <h1>视频</h1>
     <p>Bilibili / YouTube 视频内容与笔记。</p>
