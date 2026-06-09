@@ -1,158 +1,254 @@
 ---
-title: '宝宝点滴：UniApp 样板 App 如何走通家庭记录全链路'
+title: '宝宝点滴：/app/babydiary/v1 契约、bootstrap 与 record-sessions 实录'
 date: 2026-06-10
 tags: ['UniApp', '小程序', 'HUB', '育儿', '独立开发']
-description: '宝宝点滴是 HUB 的 UniApp 样板 App。本文拆解喂养记录、家庭协作与 /app/babydiary/v1 契约如何落在微服务上。'
+description: 'contracts.js 编译期 base、session/bootstrap 断兜底、13 种 recordType、2026-04-23 smoke 通过——按 app-api.md 写死的联调手册。'
 author: '罗耀生'
-updated: 2026-06-10
+updated: 2026-06-11
 ---
 
-## 它是什么
+## 这篇解决什么问题
 
-**宝宝点滴**是 50 Builds 里的 **UniApp 样板 App**，目标很具体：验证记录类 + 家庭协作业务，能不能在 HUB 底座上跑通 **微信小程序 → public-api → 业务 RPC** 全链路。
+宝宝点滴是 **UniApp 微信小程序**，用来记喂养、睡眠、换尿布、疫苗等。
 
-| 项 | 值 |
-|----|-----|
+泛泛地说「走统一后端」没用。小程序联调时真正会问：
+
+- base URL 到底写哪？能不能运行时切环境？
+- 微信登录后为什么没有家庭？要不要前端偷偷 `POST /families`？
+- 记一笔奶是打哪个接口？统计页读哪几个 GET？
+
+下面全部按 **`apps/baby-diary/docs/api/app-api.md`** 和 **`uniapp_app/api/contracts.js`** 回答。
+
+总述：[架构收敛](/blog/2026-06-09-hub-architecture-two-reference-apps/)
+
+---
+
+## 身份与 base URL
+
+| 字段 | 值 |
+|------|-----|
 | appKey | `baby-diary` |
 | appId | `babydiary` |
-| 客户端 | uniapp_app（微信小程序 / H5） |
-| 正式 API 前缀 | `/app/babydiary/v1/*` |
-| 线上入口 | `https://api.i2kai.com/app/babydiary/v1` |
+| 正式前缀 | `/app/babydiary/v1` |
+| 生产 base（默认编译） | `https://api.i2kai.com/app/babydiary/v1` |
 
-总述篇：[架构收敛之后：夜莺变声器与宝宝点滴即将上架](/blog/2026-06-09-hub-architecture-two-reference-apps/)
+`contracts.js` 开头写死的规则：
+
+```javascript
+/**
+ * 客户端始终只认一套 /app/babydiary/v1 契约。
+ * 环境差异仅来自编译期注入，不允许运行时覆盖切环境。
+ */
+```
+
+本地端口（`config/app-port-registry.json`）：
+
+| 服务 | 端口 | 谁能打 |
+|------|------|--------|
+| public-api | **55014** | 小程序 / H5 正式链 |
+| local-rest-bridge | **55004** | **仅** smoke / 诊断，不是客户端入口 |
 
 ---
 
-## 解决什么问题
+## 服务端拆法（不是一个大 public-api 包打天下）
 
-带娃家庭常见的痛点：
+| 组件 | 职责 |
+|------|------|
+| `public-api` | HTTP 门面，聚合 family/record/reminder/activity + 平台 auth/feedback |
+| `family-rpc` | 家庭、成员、邀请 |
+| `record-rpc` | 记录会话 |
+| `reminder-rpc` | 提醒设置 |
+| `activity-rpc` | 活动日志 |
 
-- 喂养、睡眠、体温、用药分散在备忘录或聊天记录里
-- 爸爸妈妈、老人之间信息不同步
-- 想回看趋势，却没有结构化数据
+正式请求链：
 
-宝宝点滴把记录收敛到一个 App 里，并支持 **家庭成员协作** 与 **提醒**。
+```text
+微信小程序 → APISIX → gateway → app-router → public-api:55014 → *-rpc
+```
+
+**2026-04-23** 本地 `make smoke-foundation` + `make smoke-business` 已通过（README 冻结）。
 
 ---
 
-## 功能模块
+## 登录：bootstrap 是硬门槛
 
-### 记录类
+### 已接入的 auth 接口
 
-喂养、同时喂养、睡眠、体重、体温、用药、黄疸、辅食、吸奶器、活动、疫苗、补剂……覆盖 0–3 岁日常高频场景。
+| 方法 | 路径 | 前端 |
+|------|------|------|
+| POST | `/auth/send-code` | 注册验证码 |
+| POST | `/auth/register` | 手机号注册 |
+| POST | `/auth/login` | 手机号登录 |
+| POST | `/auth/wechat-login` | 小程序 |
+| POST | `/session/bootstrap` | **登录后必调** |
+| GET/PUT | `/auth/profile` | 资料 |
 
-### 家庭协作
+微信登录 body 当前只有：
 
-- 创建家庭空间
-- 邀请成员加入
-- 多成员身份与权限
-- 记录在多端同步
+```json
+{ "code": "wx-code" }
+```
 
-### 统计与提醒
+登录成功最小依赖：
 
-- 日趋势、统计摘要（record RPC 聚合）
-- 提醒设置（reminder RPC）
-- 活动日志（activity RPC）
-- 数据导出
+```json
+{ "token": "access-token" }
+```
 
-反馈能力走 **平台共享 feedback**，不在 App 内重复造轮子。
+### Breaking Change：不再偷偷建家庭
+
+旧习惯：登录成功如果没有 family，前端 `POST /families` 兜底。
+
+**现在删掉。** 家庭上下文 **只认** `POST /session/bootstrap` 返回；没有 family 就报错，文档 §5.4 写死。
+
+bootstrap 核心响应：
+
+```json
+{
+  "code": 0,
+  "data": {
+    "userInfo": { "id": 123, "nickname": "宝宝家长" },
+    "context": { "currentFamilyId": 456, "familyCount": 1 },
+    "families": [{ "id": 456, "name": "我的家庭", "isCurrent": true }]
+  }
+}
+```
+
+必要时再用 `GET /families/current` 确认，但 **不能** 跳过 bootstrap。
 
 ---
 
-## 客户端契约：前端只认 public-api
+## 家庭协作：邀请与角色
 
-服务端内部怎么拆 RPC，前端不关心。客户端只认：
+| 方法 | 路径 |
+|------|------|
+| GET | `/families` |
+| GET | `/families/current` |
+| PUT | `/families/current` |
+| GET | `/family-members` |
+| PUT | `/family-members/{id}/role` |
+| POST | `/invitations` |
+| POST | `/invitations/code/{code}/accept` |
 
+角色枚举（提交用英文，展示用中文）：
+
+| role | 含义 |
+|------|------|
+| `owner` | 家庭所有者 |
+| `admin` | 管理员 |
+| `recorder` | 可记录 |
+| `readonly` | 只读 |
+
+创建邀请示例（前端实际发送）：
+
+```json
+{
+  "name": "外婆",
+  "relation": "elder",
+  "role": "recorder"
+}
 ```
-基线路径：/app/babydiary/v1
-```
 
-环境切换规则已经收口：
-
-1. 优先编译期注入 `HUB_API_BASE_URL`
-2. 若只注入网关根地址，自动补全为 `…/app/babydiary/v1`
-3. 未注入则回退线上 `https://api.i2kai.com/app/babydiary/v1`
-
-**不再有**页面内切环境、运行时改 baseUrl 的野路子——联调差异只来自 `.env.hub → vite define`。
-
-请求头统一带 `X-App-Id`、`X-Signature` 等 hub_core 约定字段，与 Flutter 侧同一套平台规则。
-
-契约事实源：`apps/baby-diary/docs/api/app-api.md`
+`relation` 推荐：`parent` / `elder` / `caregiver`
 
 ---
 
-## 服务端结构
+## 记录：只用 `/record-sessions`
 
-```
-baby-diary/server/
-├── publicapi/     # 正式 HTTP 门面（auth + family bootstrap）
-├── family/        # 家庭 / 成员 / 邀请 / 宝宝
-├── record/        # 记录会话 + 统计聚合
-├── reminder/      # 提醒
-├── activity/      # 活动日志
-└── cmd/local-rest-bridge/   # 契约诊断
+**没有**单独的 `/record-targets*` 给客户端——聚合在 session 里。
+
+| 方法 | 路径 |
+|------|------|
+| GET | `/record-sessions` |
+| POST | `/record-sessions` |
+| GET/PUT/DELETE | `/record-sessions/{id}` |
+
+13 种 `recordType`（文档 §9.1 冻结）：
+
+`feeding_bottle` · `feeding_breast` · `diaper` · `sleep` · `weight` · `temperature` · `medicine` · `jaundice` · `solid` · `pump` · `activity` · `vaccine` · `supplement`
+
+瓶喂示例：
+
+```json
+{
+  "recordType": "feeding_bottle",
+  "eventAt": "2026-04-16T09:30:00+08:00",
+  "notes": "瓶喂记录",
+  "targets": [{
+    "babyId": 1,
+    "recordType": "feeding_bottle",
+    "amount": 120,
+    "unit": "ml",
+    "payload": "{\"method\":\"奶粉\"}"
+  }]
+}
 ```
 
-正式链路：
-
-```
-UniApp 小程序
-  → APISIX
-  → gateway → app-router
-  → public-api
-  → family / record / reminder / activity RPC
-  → PostgreSQL / Redis
-```
-
-平台共享能力（auth、payment、storage、feedback）仍走 `/v1/{domain}/*` 或 storage 旁路，不混进 App 私有路由。
+列表筛选参数：`babyId` · `recordType` · `date` · `dateFrom` · `dateTo` · `page` · `pageSize`
 
 ---
 
-## 开发与 smoke
+## 统计与提醒
 
-本地标准入口：
+| 方法 | 路径 | 前端 |
+|------|------|------|
+| GET | `/stats/summary` | 已接入 |
+| GET | `/stats/trend` | 已接入 |
+| GET | `/stats/today-summary` | API 有，页面未接 |
+| GET | `/reminders/settings` | 已接入 |
+| PUT | `/reminders/settings` | 已接入 |
+
+反馈走平台门面：`POST /feedback`（不是 App 私有路径）。
+
+---
+
+## smoke：怎么证明「不是 PPT」
 
 ```bash
-make docker-local-up
-make smoke-foundation
-make smoke-business
-make smoke-client-local
-make smoke-app-router-local
-make smoke-public-api-contract
+make -C apps/baby-diary docker-local-up
+make -C apps/baby-diary smoke-foundation      # auth + bootstrap + family
+make -C apps/baby-diary smoke-business        # record + stats
+make -C apps/baby-diary smoke-public-api-contract
+make -C apps/baby-diary smoke-app-router-local
 ```
 
-2026-04-23 本地 foundation / business smoke 已通过。下一步验收重点是 **APISIX 公网入口 → 真实 RPC → 数据库** 端到端，而不是只在 bridge 上自嗨。
+生产只读（主仓脚本默认 base）：
 
-小程序调试打开 `uniapp_app/unpackage/dist/dev/mp-weixin`，不直接开源码目录；`manifest.json` 与 `project.config.json` 的 appid 必须一致。
+```bash
+# scripts/management/run-uniapp-wechat-miniapp-checks.sh
+BABYDIARY_PUBLIC_READONLY_SMOKE_BASE=https://api.i2kai.com/app/babydiary/v1
+```
+
+小程序发布前还有：
+
+```bash
+make -C apps/baby-diary smoke-miniapp-release-config
+make -C apps/baby-diary smoke-client-wechat
+```
 
 ---
 
-## 为什么选 UniApp 做记录协作样板
+## 文档优先规则（协作者必看）
 
-HUB 里 UniApp 产品不少（萌宠圈等），但宝宝点滴承担的是 **结构化记录 + 多成员协作** 这类「表单密集、状态多、家庭权限」场景：
+`app-api.md` 末尾 governance：
 
-- 页面多、记录类型多，适合验证 public-api 契约治理
-- 小程序是国内育儿场景的主战场
-- 与 Flutter 样板（夜莺）形成 **双栈互补**
+1. **改 API 先改文档**，再改 public-api / 前端 / smoke。
+2. 「API 已定义，当前页面未接入」≠ 可以删接口——门面和 smoke 仍按正式契约维护。
+3. `GET /record-sessions` 分页、筛选、时间格式 **不得** 随内部 RPC 重构漂移。
 
-| 对比 | 夜莺变声器 | 宝宝点滴 |
-|------|-----------|---------|
-| 客户端 | Flutter | UniApp / 小程序 |
-| 能力域 | voice + VIP | 记录 + 家庭协作 |
-| 样板意义 | 音频异步任务链 | 结构化 CRUD + 多成员 |
+这比「我们有个统一后端」具体得多，也是停更期间真正在干的事。
 
 ---
 
 ## 当前状态
 
-公开进度约 **75%**。客户端契约、go-zero 服务端、Makefile smoke 门禁已齐；生产发布走 Gitea CI/CD，业务机 pull/up/smoke，不在业务机编译源码。
+| 项 | 值 |
+|----|-----|
+| 公开进度 | testing **80%** |
+| 平台 | 微信小程序（UniApp） |
+| 生产镜像 tag 示例 | `2026-04-23.1`（family/record/public-api 等同批） |
+| 卡点 | 审核 + APISIX→RPC→DB 生产端到端回归 |
 
-进度页：[apps.open.i2kai.com/apps/baby-diary](https://apps.open.i2kai.com/apps/baby-diary)
+公开页：[apps.open.i2kai.com/apps/baby-diary](https://apps.open.i2kai.com/apps/baby-diary)
 
----
-
-## 写在最后
-
-宝宝点滴的难点不在「做一个育儿 UI」，而在 **契约稳定、家庭权限清晰、多端同步可靠**。
-
-它跟夜莺一起，构成 HUB 架构修正后的 **双栈验收**：一个证明 voice 链路，一个证明记录协作链路。下一篇如果还写，可能就是上架当天的发布笔记了。
+上一篇：[夜莺契约实录](/blog/2026-06-10-nightingale-voice-changer-reference-app/) · 下一篇：[上架笔记](/blog/2026-06-11-dual-app-launch-notes/)

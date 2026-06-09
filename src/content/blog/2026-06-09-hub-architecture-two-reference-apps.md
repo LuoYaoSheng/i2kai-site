@@ -1,172 +1,222 @@
 ---
-title: '架构收敛之后：夜莺变声器与宝宝点滴即将上架'
+title: '架构收敛之后：我们到底改了什么，才敢同时上架两个 App'
 date: 2026-06-09
 tags: ['HUB', '微服务', 'Flutter', 'UniApp', '独立开发']
-description: '停更数月的背后是一次微服务架构修正。修正完成后，Flutter 样板夜莺变声器与 UniApp 样板宝宝点滴将同步推进上架。'
+description: '不是概念升级：APISIX 单入口、/app/{appId}/v1 契约、config-rpc 双写、Makefile smoke 门禁。用夜莺和宝宝点滴说明修正前后差异。'
 author: '罗耀生'
-updated: 2026-06-09
+updated: 2026-06-11
 ---
 
-## 先说结论
+## 这篇想讲清楚的事
 
-Blog 和公众号停更了几个月，不是因为懒，是因为我在做一件更底层的事：**把 HUB 的微服务架构重新收口**。
+停更几个月，我在改 **能跑通的架构**，不是改 PPT。
 
-收口完成后，接下来要上架的两个 App 也不只是「又做了两个产品」——它们分别是 **Flutter 样板** 和 **UniApp 样板**，用来验证同一套平台底座能不能同时承载不同客户端技术栈：
+2026 年 3 月那篇 [HUB Center 统一后端](/blog/2026-03-18-hub-backend-architecture/) 里写的是「一个 Gin 服务 + MySQL hub_db + 8888 端口」——那是早期抽象，**和现在的生产形态已经对不上**。如果现在还按那篇理解 HUB，联调一定会撞墙。
 
-- **夜莺变声器**（Flutter）—— voice 链路 + 会员订阅样板
-- **宝宝点滴**（UniApp / 小程序）—— 家庭协作 + 记录类业务样板
+这篇用 **真实仓库约束 + 两个正在上架的 App** 说明：我们改了什么、怎么验收、为什么敢让 Flutter 和 UniApp 同时走同一套底座。
 
-架构图和进度已同步到公开站：[apps.open.i2kai.com/architecture](https://apps.open.i2kai.com/architecture)
-
----
-
-## 为什么停更：旧架构文已经不够用了
-
-2026 年 3 月，我在 i2kai.com 发过一篇 [HUB Center 统一后端](/blog/2026-03-18-hub-backend-architecture/)，讲的是「50 个 App 共用一个后端」的大方向。
-
-方向没错，但实现细节在那之后变化很大：
-
-| 旧认知 | 修正后的认知 |
-|--------|--------------|
-| 「API 网关」概念笼统 | **APISIX 是唯一公网入口**（api.i2kai.com） |
-| App 可能直连各种服务 | **App 不直连 RPC**，先走 gateway / public-api |
-| public-api 像业务中心 | public-api 是 **HTTP 门面**，不是领域事实源 |
-| 后台保存即生效 | Admin 保存 → config-rpc → ETCD → owner service 消费，**才算真正生效** |
-
-这段时间我在改入口、改路由、改契约、改 smoke，文章管线自然慢下来。现在架构主文档、`apps-progress` 公开架构页和微服务索引已经对齐，可以重新对外讲了。
+公开架构页（六张图 + 21 个服务索引）：[apps.open.i2kai.com/architecture](https://apps.open.i2kai.com/architecture)
 
 ---
 
-## 修正后的固定认知
+## 修正前后：不是换名词，是换链路
 
-对任何 App，只需要记住一句话：
+| 维度 | 2026-03 旧文/旧习惯 | 现在代码里冻结的事实 |
+|------|----------------------|----------------------|
+| 数据库 | 文章写 MySQL `hub_db` | 平台侧 **PostgreSQL** + Redis + ETCD（香港主运行面） |
+| 入口 | 「API 网关」一句话 | **APISIX** 唯一公网入口：`api.i2kai.com` / `admin.i2kai.com` |
+| App 业务路径 | 各 App 路径不统一，旧公共路径混用 | 正式契约 **`/app/{appId}/v1/*`**，例：`/app/babydiary/v1`、`/app/nightingalevoicechanger/v1` |
+| 客户端能否直连 RPC | 本地调试时偶尔直连过 | **禁止**；正式链必须 APISIX → gateway → public-api |
+| public-api 角色 | 容易被当成「业务中心」 | **HTTP 门面 only**；账号/支付/voice/文件事实源在平台 RPC |
+| 配置保存 | 「后台改完就生效」 | `admin-api → config-rpc.UpdateSystemConfig → sys_config + ETCD`；**owner service 消费后才算生效** |
+| 支付回调 | 有时挂 App 私有路由 | **固定** `/v1/payment/callback/*`，不走 `/app/{appId}/…` |
+| 本地端口 | 随手填 | 平台 **18000–19999**；App public-api ingress **55000–58999**；登记在 `config/app-port-registry.json` |
 
-**所有正式请求都先进入 APISIX。**
-
-然后再按路径前缀分流：
-
-| 路径 | 用途 |
-|------|------|
-| `/app/{appId}/v1/*` | 单个 App 的业务 API（经 public-api） |
-| `/v1/{domain}/*` | 平台共享 API（auth、payment、config 等） |
-| `/v1/storage/*` | 文件上传（storage-api → file-rpc） |
-| `/admin-api/*` | 管理后台 |
-
-命名约定：
-
-- `appKey` = 仓库目录名（kebab-case），如 `baby-diary`
-- `appId` = 去连字符，如 `babydiary`、`nightingalevoicechanger`
+上面任何一行对不齐，smoke 就会红，而不是「文档写错了而已」。
 
 ---
 
-## 五层结构：以后讨论架构就按这张表
+## 固定认知：一条 URL 规则 + 四路分流
 
-| 层级 | 组件 | 职责 |
-|------|------|------|
-| 入口层 | APISIX | 唯一公网入口、TLS、限流 |
-| 协议层 | gateway | Token、app-router、按 appId 找 public-api upstream |
-| 管理门面 | admin-web / admin-api | 运营控制台，配置写入门面 |
-| 领域层 | auth / payment / vip / voice / file … | **事实源**在 RPC + PostgreSQL |
-| HTTP 支撑 | storage-api | 标准文件上传入口 |
-
-关键约束三条：
-
-1. **门面 ≠ 事实源**——gateway、public-api、admin-api 只做编排。
-2. **支付回调走共享路径**——`/v1/payment/callback/*`，不走 App 私有路由。
-3. **配置生效看消费链**——页面保存成功，不等于运行时已经 reload。
-
-更完整的图和微服务索引见公开架构页，比本文更细，适合出门协作时直接打开给团队看。
-
----
-
-## 为什么选这两个 App 一起上架
-
-HUB 里已经有 100+ 应用条目，但「样板 App」需要覆盖不同客户端形态。译言宝验证了 Flutter 翻译链路，萌宠圈在 UniApp 内容侧推进；这一轮补齐的是：
-
-### 夜莺变声器（Flutter）
-
-| 项 | 说明 |
-|----|------|
-| appId | `nightingalevoicechanger` |
-| 客户端 | Flutter 应用壳 + hub_core |
-| 正式链路 | Flutter → public-api → voiceexecution-rpc → platform voice |
-| 核心能力 | 录音变声、音色库、聊天/游戏语音模式、语音包、历史同步、VIP 订阅 |
-| 平台样板意义 | **voice 能力 + 支付会员** 在 Flutter 侧的完整闭环 |
-
-### 宝宝点滴（UniApp）
-
-| 项 | 说明 |
-|----|------|
-| appId | `babydiary` |
-| 客户端 | uniapp_app（微信小程序 / H5） |
-| 正式前缀 | `/app/babydiary/v1/*` |
-| 服务端 | family / record / reminder / activity + public-api |
-| 核心能力 | 喂养与作息记录、家庭成员协作、提醒、统计与导出 |
-| 平台样板意义 | **记录类 + 家庭协作** 在 UniApp 侧的完整闭环 |
-
-一个走 **语音 + 订阅**，一个走 **记录 + 协作**——技术栈不同，底座相同。
-
----
-
-## 端到端：用户点一下之后发生了什么
-
-以业务请求为例（简化）：
+### URL 规则
 
 ```
-用户 → 客户端（Flutter / UniApp）
-     → hub_core（设备与签名）
-     → APISIX
-     → gateway → app-router
-     → App public-api
-     → 平台 RPC（auth / payment / voice / file …）
+appKey  = 仓库目录名（kebab-case）   baby-diary
+appId   = 去连字符                  babydiary
+正式前缀 = /app/{appId}/v1
 ```
 
-文件上传走旁路：`/v1/storage/*` → storage-api → file-rpc，不经 public-api 编排上传本身。
+宝宝点滴客户端默认 base（未注入环境变量时）：
 
-支付主链：创建订单 → payment-rpc → 回调验单 → vip-rpc 履约 → promotion-rpc 归因。App 只关心会员态 UI，事实以 vip-rpc 为准。
+```text
+https://api.i2kai.com/app/babydiary/v1
+```
+
+代码事实源：`apps/baby-diary/uniapp_app/api/contracts.js`
+
+夜莺正式前缀：
+
+```text
+/app/nightingalevoicechanger/v1/*
+```
+
+旧 helper 路径已移除；`docs/api/app-api.md` 明确：**唯一正式入口**是上述前缀。
+
+### APISIX 四路分流
+
+| 前缀 | 典型请求 | 落到谁 |
+|------|----------|--------|
+| `/app/{appId}/v1/*` | 业务 API | gateway → app-router → **App public-api** |
+| `/v1/{domain}/*` | 登录/支付/配置 | gateway → **platform RPC** |
+| `/v1/storage/*` | 上传 | **storage-api** → file-rpc |
+| `/admin-api/*` | 后台 | **admin-api** → config-rpc 等 |
+
+生产入口在香港业务机 APISIX（部署文档：`118.193.47.55`），Cloudflare 前置 TLS。
 
 ---
 
-## 开发和验收现状
+## 我们实际动刀的三块
 
-**夜莺变声器** 当前进度约 82%：public-api 契约、voice smoke、admin 配置投影、本地 docker smoke 已纳入 Makefile 门禁。
+### 1. App 契约收口（两个 App 各不一样，但规则相同）
 
-**宝宝点滴** 当前进度约 75%：uniapp 客户端与 go-zero 服务端同仓维护；foundation / business smoke 已在本地通过，下一步验收重点是 **APISIX 入口 → 真实 RPC → PostgreSQL/Redis** 的端到端链路。
+**宝宝点滴**（UniApp）：
 
-两者都不是「写个 Demo 就上架」，而是按 HUB 门禁把 **契约、smoke、部署** 一起收完。
+- 前端只认 `/app/babydiary/v1`；环境差异 **只来自** `.env.hub → vite define`，页面里不能切环境。
+- 登录后家庭上下文走 `POST /session/bootstrap`，**删掉了**「登录成功再 `POST /families` 兜底建家庭」的老逻辑。
+- 服务端拆成 `family / record / reminder / activity + publicapi`，2026-04-23 本地 `make smoke-foundation` + `make smoke-business` 已通过。
+
+**夜莺变声器**（Flutter）：
+
+- 变声主链冻结为 **`POST /voice/sts/convert` → 轮询 `GET /voice/tasks/{jobId}`**，不是同步等结果。
+- 执行链：`public-api → voiceexecution-rpc → platform voice → Windows RVC`；回调主责在 **voice-rpc**，不在 Flutter。
+- `smoke-public-api-contract` 会 mock RVC 验主链，另有 `smoke-public-api-contract-remote` 打真实 Windows 节点。
+
+### 2. 控制面 vs 运行态（为什么后台「保存成功」还不够）
+
+`config-rpc.UpdateSystemConfig` 当前是 **PostgreSQL `sys_config` 与 ETCD 双写**。但运行态消费方式 **还不完全统一**（微服务索引 §2.6.1 按代码冻结）：
+
+- `auth-rpc`：`GetSystemConfig` 读 DB
+- `storage-api` / `notification-rpc`：ETCD watch
+- `payment-rpc`：按需读 ETCD 的 `payment_connector_capability`
+
+所以 voice 后台改了 `voice_service_configs`，还要问：**voice-rpc / voiceexecution 有没有 reload**——这也是 `make smoke-admin-voice` 存在的原因。
+
+### 3. 门禁脚本（不是「感觉能跑」）
+
+两个 App 的 Makefile 里都有可重复执行的 smoke，例如：
+
+```bash
+# 宝宝点滴
+make -C apps/baby-diary smoke-public-api-contract
+make -C apps/baby-diary smoke-app-router-local
+
+# 夜莺
+make -C apps/nightingale-voice-changer smoke-public-api-contract
+make -C apps/nightingale-voice-changer smoke-admin-voice
+```
+
+主仓还有公开只读 smoke（生产 APISIX）：
+
+```bash
+# scripts/management/run-uniapp-wechat-miniapp-checks.sh 内默认：
+# BABYDIARY_PUBLIC_READONLY_SMOKE_BASE=https://api.i2kai.com/app/babydiary/v1
+```
+
+**文章可以停更，smoke 不能停。**
 
 ---
 
-## 50 Builds 进度怎么对外看
+## 为什么用这两个 App 做双栈验收
 
-公开进度站：[apps.open.i2kai.com](https://apps.open.i2kai.com)
+| | 夜莺变声器 | 宝宝点滴 |
+|---|-----------|---------|
+| appId | `nightingalevoicechanger` | `babydiary` |
+| 客户端 | Flutter + hub_core | UniApp 小程序 |
+| public-api 端口（本地登记） | 58014 | 55014（public-api）/ 55004（bridge 仅诊断） |
+| 验证的能力 | voice 异步任务 + VIP 套餐 | 记录 CRUD + 家庭邀请 + bootstrap |
+| 已有对外产物 | APK v1.0.0 官方包 | 小程序审核推进中 |
 
-- **应用目录** `/apps` — 全量 HUB 清单 + 50 Builds 跟踪
-- **架构速览** `/architecture` — 六张架构图 + 微服务索引 + 主流程
-- **时间线** `/timeline` — 发布节点
-
-上架完成后，我会把 `apps.ts` 里的状态从 `building` 更新为 `released`，与 Blog / 公众号文章同一批次对外。
+译言宝验证过 Flutter + 翻译；这一轮补齐 **voice+订阅** 与 **记录+协作** 两条差异最大的链。
 
 ---
 
-## 接下来还会发什么
+## 一条请求在夜莺里的真实路径（举例）
 
-这篇文章是 **总述**——把「为什么停更、架构修正了什么、两个 App 为什么一起上」一次讲清楚。
+用户点「变声」后，Flutter 实际打的是：
 
-后续还会拆更细的篇目（公众号 / 小红书同步）：
+```http
+POST /app/nightingalevoicechanger/v1/voice/sts/convert
+Authorization: Bearer …
+X-App-Id: nightingalevoicechanger
+X-Signature: …
+```
 
-1. 微服务架构修正专题（控制面 vs 运行态）
-2. 夜莺变声器产品与技术细节
-3. 宝宝点滴产品与技术细节
+返回不是最终音频，而是 **`accepted + job_id + poll_after_ms`**。客户端再轮询：
 
-但主线就以这篇为准：**先收敛架构，再让样板 App 证明架构可用。**
+```http
+GET /app/nightingalevoicechanger/v1/voice/tasks/{jobId}
+```
+
+这和「public-api 里同步调 RVC」的旧思路完全不同——**门面只编排，执行在 voiceexecution + 平台 voice**。
+
+---
+
+## 一条会话在宝宝点滴里的真实路径（举例）
+
+小程序启动后：
+
+```http
+POST /app/babydiary/v1/auth/wechat-login
+{ "code": "wx-code" }
+```
+
+拿到 `token` 后 **必须** bootstrap：
+
+```http
+POST /app/babydiary/v1/session/bootstrap
+Authorization: Bearer …
+```
+
+响应里带 `currentFamilyId` / 宝宝列表；**没有 family 就报错**，前端不再偷偷建默认家庭——这是契约层Breaking Change，文档写在 `app-api.md` §5.4。
+
+记一笔喂养：
+
+```http
+POST /app/babydiary/v1/record-sessions
+```
+
+统计页：
+
+```http
+GET /app/babydiary/v1/stats/summary
+GET /app/babydiary/v1/stats/daily-trend
+```
+
+反馈走平台门面 `POST /feedback`，不是 App 私有 RPC。
+
+---
+
+## 当前状态（2026-06-11）
+
+| App | 公开进度 | 卡点 |
+|-----|----------|------|
+| 夜莺 | testing 90% | App Store 筹备中；Android 官方 APK 已出 |
+| 宝宝点滴 | testing 80% | 微信小程序审核；APISIX→RPC→DB 生产端到端回归 |
+
+连载拆分：
+
+- [130 夜莺技术拆解](/blog/2026-06-10-nightingale-voice-changer-reference-app/)
+- [131 宝宝点滴技术拆解](/blog/2026-06-10-baby-diary-reference-app/)
+- [132 上架发布笔记](/blog/2026-06-11-dual-app-launch-notes/)
 
 ---
 
 ## 写在最后
 
-独立开发做 50 个 App，难点从来不只是「写界面」，而是 **每多一个 App，基础设施是否仍然 hold 得住**。
+泛泛的「统一后端」救不了第 20 个 App。需要的是：
 
-这次架构修正，就是把入口、路由、门面和事实源彻底分开；夜莺和宝宝点滴，就是修正后的第一次双栈验收。
+**入口唯一、契约可测、门面与事实源分离、smoke 可重复。**
 
-如果你也在做多 App 或平台化，欢迎直接看公开架构页，或到 [愿望池](https://apps.open.i2kai.com/wishlist) 留言你想看哪条链路展开成文。
+这次修正麻烦，是因为之前欠的债集中在入口和契约上。夜莺和宝宝点滴一起上架，不是为了凑数，是 **同一套规则下的 Flutter / UniApp 双重复验**。
+
+你想看某条 smoke 或某段契约原文，直接打开公开架构页或主仓 `docs/项目/01_系统架构.md`；也欢迎到 [愿望池](https://apps.open.i2kai.com/wishlist) 点名下一篇拆哪条链。
