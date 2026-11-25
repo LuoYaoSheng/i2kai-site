@@ -276,7 +276,7 @@ export const projectShowcaseCases: ProjectShowcaseCase[] = [
   {
     title: 'QueryLab',
     slug: 'querylab',
-    type: '开源项目',
+    type: '软件项目',
     category: '数据库工具',
     year: '2026',
     role: '独立开发',
@@ -414,7 +414,7 @@ export const projectShowcaseCases: ProjectShowcaseCase[] = [
   {
     title: 'lys Open Source Site',
     slug: 'open-source-site',
-    type: '开源项目',
+    type: '公开站点',
     category: '文档站',
     year: '2026',
     role: '独立开发',

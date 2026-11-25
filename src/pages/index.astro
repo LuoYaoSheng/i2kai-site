@@ -9,13 +9,20 @@ import { isShare, recentEntries, videos } from '../data/content';
 
 const [updates, allVideos] = await Promise.all([recentEntries(), videos()]);
 const shares = allVideos.filter(isShare).slice(0, 2);
+const recentUpdates = updates.slice(0, 6);
+const featuredArticlePaths = [
+  '/blog/2026-06-09-hub-architecture-two-reference-apps/',
+  '/blog/2026-03-18-auto-publish-system/',
+  '/blog/2026-03-16-why-flutter/',
+];
+const featuredArticles = updates.filter((entry) =>
+  featuredArticlePaths.includes(entry.href) && !recentUpdates.some((recent) => recent.href === entry.href));
 const projectGroups = [
   { name: '软件与开发工具', slugs: ['smart-ble', 'batch-image-studio'] },
-  { name: '开源硬件与 DIY', slugs: ['queue-caller'] },
+  { name: '硬件与 DIY', slugs: ['queue-caller'] },
   { name: 'IoT 与智能设备', slugs: ['open-iot-platform', 'esp32-c3-weather-station'] },
   { name: 'AI 与实验项目', slugs: ['modular-ai-robot-kit'] },
 ].map(({ name, slugs }) => ({ name, projects: slugs.flatMap((slug) => getProject(slug) ?? []) }));
-const practices = updates.filter((entry) => ['实践记录', '实验记录'].includes(entry.type)).slice(0, 4);
 ---
 <BaseLayout title="i2kai / 爱二开网" description={siteMeta.description}>
   <section class="home-intro" aria-labelledby="home-title">
@@ -68,7 +75,7 @@ const practices = updates.filter((entry) => ['实践记录', '实验记录'].inc
         <h2 id="updates-title">最近更新</h2>
         <a href="/search/">全部更新 →</a>
       </div>
-      <UpdateList entries={updates.slice(0, 6)} />
+      <UpdateList entries={recentUpdates} />
       <a class="home-article-link" href="/blog/">继续读文章 →</a>
     </section>
   </div>
@@ -96,11 +103,11 @@ const practices = updates.filter((entry) => ['实践记录', '实验记录'].inc
     {shares.length > 0 ? <ul class="line-list">{shares.map((video) => <VideoRow video={video} />)}</ul> : <p>已保留历史视频笔记。</p>}
   </section>
 
-  <section class="home-section" aria-labelledby="practice-title">
+  {featuredArticles.length >= 2 && <section class="home-section" aria-labelledby="featured-articles-title">
     <div class="section-head">
-      <h2 id="practice-title">技术记录</h2>
+      <h2 id="featured-articles-title">文章精选</h2>
       <a href="/blog/">查看文章 <span aria-hidden="true">→</span></a>
     </div>
-    <UpdateList entries={practices} />
-  </section>
+    <UpdateList entries={featuredArticles} />
+  </section>}
 </BaseLayout>

@@ -7,11 +7,11 @@ import { projectGroups, docSites } from '../data/site';
 
 const archive = projects.filter((project) => project.archiveOnly);
 const current = projects.filter((project) => !project.archiveOnly);
-const open = current.filter((project) => project.sources.length > 0);
+const withSources = current.filter((project) => project.sources.length > 0);
 const prototypes = current.filter((project) => project.stage === 'Prototype');
-const independent = current.filter((project) => !open.includes(project) && !prototypes.includes(project));
+const independent = current.filter((project) => !withSources.includes(project) && !prototypes.includes(project));
 const groups = [
-  { name: '开源项目', items: open },
+  { name: '有源码入口', items: withSources },
   { name: '硬件原型', items: prototypes },
   { name: '独立应用', items: independent },
 ];
