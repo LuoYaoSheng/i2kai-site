@@ -18,7 +18,7 @@ const notes = all.filter((video) => !isShare(video));
   <section class="video-library" aria-labelledby="recent-videos">
     <div class="section-head"><h2 id="recent-videos">最近分享</h2></div>
     {shares.length > 0 ? <FilterList id="video-results" label="搜索视频" categories={videoCategories} initialCount={shares.length}>
-      <ul class="line-list video-collection">{shares.map((video) => <VideoRow video={video} showFeatured />)}</ul>
+      <ul class="line-list video-collection">{shares.map((video) => <VideoRow video={video} showFeatured showWatchLink />)}</ul>
     </FilterList> : <p>暂无已收录的外部视频。</p>}
   </section>
 

@@ -1,14 +1,33 @@
 ---
 import { isoDate, videoPath, videoSource, type VideoShare } from '../data/content';
-const { video, showFeatured = false } = Astro.props as { video: VideoShare; showFeatured?: boolean };
+interface Props {
+  video: VideoShare;
+  showFeatured?: boolean;
+  showWatchLink?: boolean;
+}
+
+const { video, showFeatured = false, showWatchLink = false } = Astro.props;
+const source = videoSource(video);
 const data = video.data;
 ---
-<li class="video-row" data-filter-row data-categories={data.category} data-search={[data.title, data.originalAuthor, videoSource(video).name, data.category, data.recommendation, ...data.tags].join(' ')}>
+<li class="video-row" data-filter-row data-categories={data.category} data-search={[data.title, data.originalAuthor, source.name, data.category, data.recommendation, ...data.tags].join(' ')}>
   <div class="video-thumbnail"><img src={data.cover} data-remote alt="" width="320" height="180" loading="lazy" decoding="async" referrerpolicy="no-referrer" /></div>
   <div class="video-row-copy">
-    <p class="entry-meta">{showFeatured && data.featured && <strong class="video-featured">精选 · </strong>}{videoSource(video).name} · {data.originalAuthor} · {data.category}</p>
+    <p class="entry-meta">{showFeatured && data.featured && <strong class="video-featured">精选 · </strong>}{source.name} · {data.originalAuthor} · {data.category}</p>
     <h3><a href={videoPath(video)}>{data.title}</a></h3>
     <p>{data.recommendation}</p>
     <time class="entry-date" datetime={isoDate(data.date)}>{isoDate(data.date)} 分享</time>
+    {showWatchLink && source.watch && <a class="video-watch-link" href={source.watch}
+      target="_blank" rel="noopener noreferrer"
+      aria-label={`原站观看 ${data.title}（${source.name}，新标签页）`}
+    >原站观看 <span aria-hidden="true">↗</span></a>}
   </div>
 </li>
+
+<style>
+  .video-watch-link {
+    display: inline-block;
+    margin-block-start: .4rem;
+    font-size: .875rem;
+  }
+</style>

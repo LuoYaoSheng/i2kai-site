@@ -24,6 +24,10 @@ async (page) => {
     ['/showcase/', 'project-archive'], ['/series/fun-builds/', 'legacy-series'],
     ['/contact/', 'contact'], ['/search/', 'search'],
   ];
+  const entries = [
+    { name: 'Bilibili', author: '乐鑫信息科技', path: '/videos/esp32-c3-s3-espressif/', player: 'https://player.bilibili.com/player.html?bvid=BV1m5411P7yq&page=1&autoplay=0', watch: 'https://www.bilibili.com/video/BV1m5411P7yq/' },
+    { name: 'YouTube', author: 'Google for Developers', path: '/videos/flutter-layoutbuilder/', player: 'https://www.youtube-nocookie.com/embed/IYDVcriKjsw', watch: 'https://www.youtube.com/watch?v=IYDVcriKjsw' },
+  ];
   const add = (name, passed, evidence) => checks.push({ name, passed, ...(evidence === undefined ? {} : { evidence }) });
   page.on('pageerror', error => issues.push(error.stack));
   page.on('response', response => {
@@ -62,6 +66,9 @@ async (page) => {
         };
       });
       layouts.push({ name, viewport: viewport.width, status: response.status(), ...layout });
+      if (name === 'videos' && viewport.width <= 390) {
+        add(`video listing has no horizontal overflow at ${viewport.width}px`, layout.overflow === 0);
+      }
       if (layout.overflow > 1 || layout.outsideNav || layout.badLocalImages.length || response.status() !== 200) issues.push({ name, viewport: viewport.width, ...layout });
       if (viewport.width === 390 || viewport.width === 1440) {
         await page.addScriptTag({ path: axePath });
@@ -113,12 +120,32 @@ async (page) => {
 
   await page.goto(root + '/videos/');
   const videoSection = page.getByRole('region', { name: '最近分享' });
+  const rows = videoSection.locator('.video-row');
+  const watchLinkOptions = { name: /^原站观看/ };
+  const watchLinkCounts = await Promise.all((await rows.all()).map((row) => row.getByRole('link', watchLinkOptions).count()));
+  add('every shared video has an original watch link',
+    watchLinkCounts.length >= entries.length && watchLinkCounts.every((count) => count === 1));
+  for (const entry of entries) {
+    const row = rows.filter({ has: page.locator(`h3 a[href="${entry.path}"]`) });
+    const watch = row.getByRole('link', watchLinkOptions);
+    add(`${entry.name} list title links to its detail and shows the original author`,
+      await row.locator('h3 a').isVisible()
+      && await row.locator('.entry-meta').getByText(`${entry.name} · ${entry.author}`, { exact: false }).isVisible());
+    add(`${entry.name} list watch link uses the exact source and opens safely in a new tab`,
+      await watch.isVisible() && await watch.getAttribute('href') === entry.watch
+      && await watch.getAttribute('target') === '_blank' && await watch.getAttribute('rel') === 'noopener noreferrer');
+    await row.locator('h3 a').focus();
+    await page.keyboard.press('Tab');
+    add(`${entry.name} list watch link is reachable with Tab`, await watch.evaluate(el => document.activeElement === el));
+  }
   const search = videoSection.getByRole('searchbox');
   await search.focus();
   await page.keyboard.type('flutter');
   add('video search accepts keyboard input and finds one item', await videoSection.locator('[data-filter-row]:visible').count() === 1);
   await search.fill('Google for Developers');
-  add('video search matches original author', await videoSection.getByRole('link', { name: /LayoutBuilder/ }).count() === 1);
+  add('video search matches original author',
+    await rows.locator('visible=true').count() === 1
+    && await videoSection.getByRole('heading', { name: /LayoutBuilder/ }).isVisible());
   await videoSection.getByLabel('分类').selectOption('硬件电子');
   add('video categories combine with search', await videoSection.getByText('没有匹配的内容。').isVisible());
   await videoSection.getByRole('button', { name: '清除筛选' }).press('Enter');
@@ -171,10 +198,6 @@ async (page) => {
     && await page.getByText('物联网架构专家 / 全栈开发者', { exact: true }).isVisible()
     && await page.getByText(/^12年\+/).isVisible());
 
-  const entries = [
-    { name: 'Bilibili', path: '/videos/esp32-c3-s3-espressif/', player: 'https://player.bilibili.com/player.html?bvid=BV1m5411P7yq&page=1&autoplay=0', watch: 'https://www.bilibili.com/video/BV1m5411P7yq/' },
-    { name: 'YouTube', path: '/videos/flutter-layoutbuilder/', player: 'https://www.youtube-nocookie.com/embed/IYDVcriKjsw', watch: 'https://www.youtube.com/watch?v=IYDVcriKjsw' },
-  ];
   for (const entry of entries) {
     const initialPlayerRequests = [];
     const recordRequest = request => {
