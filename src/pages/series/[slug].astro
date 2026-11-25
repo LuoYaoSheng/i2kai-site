@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectRow from '../../components/ProjectRow.astro';
+import { series } from '../../data/maker.mjs';
+import { getProject } from '../../data/projects';
+import { articles, articlePath, videoPath, videos } from '../../data/content';
+export function getStaticPaths() {
+  return series.map((item) => ({ params: { slug: item.id }, props: { item } }));
+}
+const { item } = Astro.props;
+const projects = item.projectIds.flatMap((id: string) => getProject(id) ?? []);
+const [posts, allVideos] = await Promise.all([articles(), videos()]);
+const relatedPosts = posts.filter((post) => post.data.seriesIds.includes(item.id));
+const relatedVideos = allVideos.filter((video) => video.data.seriesIds.includes(item.id));
+---
+<BaseLayout title={`${item.title} — 系列记录 · 爱二开网`} description={item.summary}>
+  <header class="page-intro compact-intro"><a class="back-link" href="/series/">← 全部系列</a><p class="entry-meta">{item.label}</p><h1>{item.title}</h1><p>{item.summary}</p></header>
+  <p class="case-notice">{item.note}</p>
+  {projects.length > 0 && <section class="section"><h2>系列项目</h2><ul class="line-list">{projects.map((project) => <ProjectRow project={project} />)}</ul></section>}
+  {(relatedPosts.length > 0 || relatedVideos.length > 0) && <section class="section">
+    <h2>开发记录与配套笔记</h2>
+    <ul class="plain-links">
+      {relatedPosts.map((post) => <li><a href={articlePath(post)}>{post.data.title}</a></li>)}
+      {relatedVideos.map((video) => <li><a href={videoPath(video)}>{video.data.title}</a></li>)}
+    </ul>
+  </section>}
+</BaseLayout>

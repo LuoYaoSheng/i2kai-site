@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "verify:participation": "node scripts/verify-participation.mjs",
+    "verify:static": "python3 scripts/verify-static.py"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.2",

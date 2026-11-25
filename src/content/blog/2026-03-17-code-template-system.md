@@ -1,4 +1,6 @@
 ---
+category: 技术教程
+kind: article
 title: '我的代码模板系统，节省60%时间'
 date: 2026-03-17
 tags: ['工程化', 'Flutter', '效率工具']

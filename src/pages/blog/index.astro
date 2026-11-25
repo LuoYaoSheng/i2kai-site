@@ -1,34 +1,67 @@
 ---
+import { articleCategories } from '../../data/taxonomy';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import FilterList from '../../components/FilterList.astro';
+import { articlePath, articles, articleType, isoDate } from '../../data/content';
 
-const allPosts = await getCollection('blog', ({ data }) => !data.draft);
-const posts = allPosts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const posts = await articles();
+const recommendations = [
+  {
+    id: '2026-06-09-hub-architecture-two-reference-apps',
+    title: '两个 App，如何共用一个后端？',
+    description: '从夜莺和宝宝点滴的实际联调出发，讲清 API 入口、配置和上架前的检查。',
+  },
+  {
+    id: '2026-04-10-smart-ble-multi-platform',
+    title: '让同一套 BLE 调试流程跑在多个平台',
+    description: '蓝析怎样统一设备发现、连接和调试体验。',
+  },
+  {
+    id: '2026-03-18-auto-publish-system',
+    title: '一份 Markdown，发到多个平台',
+    description: '用自动化流程生成小红书卡片和微信公众号 HTML。',
+  },
+].flatMap(({ id, ...recommendation }) => {
+  const post = posts.find((entry) => entry.slug === id);
+  return post ? [{ ...recommendation, post }] : [];
+});
+const [lead, ...more] = recommendations;
 ---
+<BaseLayout title="文章 — 爱二开网" description="软件开发、硬件、开源、AI 与 IoT 的技术文章和实践记录。">
+  <header class="page-intro directory-intro">
+    <div><h1>文章</h1><p>写下开发中做过的取舍、踩过的坑，以及可以复用的方法。</p></div>
+    <nav class="text-links" aria-label="文章页导航"><a href="#article-directory">浏览全部文章 ↓</a><a href="/rss.xml">订阅 RSS</a></nav>
+  </header>
 
-<BaseLayout title="博客 — 爱二开网">
-  <div class="page-intro">
-    <h1>博客</h1>
-    <p>技术文章、项目动态和开发随想。</p>
-  </div>
+  {lead && <section class="section-feature" aria-label="推荐阅读">
+    <a class="feature-lead" href={articlePath(lead.post)} aria-labelledby="recommended-article-title">
+      <p class="entry-meta">推荐阅读 · {lead.post.data.category}</p>
+      <h2 id="recommended-article-title">{lead.title}</h2>
+      <p>{lead.description}</p>
+      <span class="feature-link">阅读开发复盘 →</span>
+    </a>
+    {more.length > 0 && <ul class="plain-links feature-links">{more.map(({ title, description, post }) => (
+      <li>
+        <p class="entry-meta">{post.data.category}</p>
+        <h3><a href={articlePath(post)}>{title}</a></h3>
+        <p>{description}</p>
+      </li>
+    ))}</ul>}
+  </section>}
 
-  {posts.length > 0 ? (
-    <div class="blog-list">
-      {posts.map((post) => (
-        <a href={`/blog/${post.slug}`} class="blog-list-item">
+  <section class="section" id="article-directory" aria-labelledby="article-directory-title">
+    <div class="section-head"><h2 id="article-directory-title">全部文章</h2></div>
+    <FilterList id="article-results" label="搜索文章" categories={articleCategories} initialCount={posts.length}>
+      <ul class="line-list">
+        {posts.map((post) => <li class="article-row" data-filter-row data-categories={post.data.category} data-search={[post.data.title, post.data.description, post.data.category, ...post.data.tags].join(' ')}>
+          <time class="entry-date" datetime={isoDate(post.data.date)}>{isoDate(post.data.date)}</time>
           <div>
-            <span class="blog-item-title">{post.data.title}</span>
-            {post.data.description && (
-              <p style="font-size:0.85rem;margin:0.25rem 0 0;color:var(--muted);">{post.data.description}</p>
-            )}
+            <h3><a href={articlePath(post)}>{post.data.title}</a></h3>
+            <p>{post.data.description}</p>
+            <div class="entry-meta">{post.data.category} · {articleType[post.data.kind]}</div>
           </div>
-          <span class="blog-item-date mono">{post.data.date.toLocaleDateString('zh-CN')}</span>
-        </a>
-      ))}
-    </div>
-  ) : (
-    <div class="empty-state">
-      <p>博客文章即将到来，敬请期待。</p>
-    </div>
-  )}
+        </li>)}
+      </ul>
+    </FilterList>
+  </section>
 </BaseLayout>

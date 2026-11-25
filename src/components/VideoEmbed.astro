@@ -1,23 +1,34 @@
 ---
 interface Props {
-  platform: 'bilibili' | 'youtube';
-  bvid?: string;
-  videoId?: string;
+  title: string;
+  name: string;
+  watch?: string;
+  embed?: string;
+  cover?: string;
 }
-
-const { platform, bvid, videoId } = Astro.props;
-
-const src =
-  platform === 'bilibili'
-    ? `https://player.bilibili.com/player.html?bvid=${bvid}&autoplay=0`
-    : `https://www.youtube.com/embed/${videoId}`;
+const { title, name, watch, embed, cover } = Astro.props;
 ---
+{embed && <div class="video-player" data-video-player data-src={embed} data-title={`${name} 播放器 · ${title}`}>
+  {cover && <img src={cover} data-remote alt="" width="640" height="360" loading="lazy" decoding="async" referrerpolicy="no-referrer" />}
+  <button class="player-button" type="button" hidden>加载 {name} 播放器</button>
+</div>}
+{watch ? <p class="watch-link"><a href={watch}>在 {name} 原站观看 ↗</a>{embed && <span data-player-help hidden> · 播放受限时可前往原站</span>}</p> : <p class="case-notice"><strong>视频链接待补。</strong> 现保留原发表的文字笔记。</p>}
 
-<div class="video-embed-wrapper">
-  <iframe
-    src={src}
-    allowfullscreen
-    loading="lazy"
-    title="Video player"
-  />
-</div>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-video-player]').forEach((player) => {
+    const button = player.querySelector('button')!;
+    button.hidden = false;
+    player.nextElementSibling?.querySelector('[data-player-help]')?.removeAttribute('hidden');
+    button.addEventListener('click', () => {
+      const frame = document.createElement('iframe');
+      frame.src = player.dataset.src!;
+      frame.title = player.dataset.title!;
+      frame.loading = 'lazy';
+      frame.referrerPolicy = 'strict-origin-when-cross-origin';
+      frame.allow = 'encrypted-media; fullscreen; picture-in-picture';
+      frame.allowFullscreen = true;
+      player.replaceChildren(frame);
+      frame.focus();
+    }, { once: true });
+  });
+</script>

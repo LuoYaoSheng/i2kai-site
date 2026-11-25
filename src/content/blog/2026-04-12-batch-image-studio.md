@@ -1,9 +1,13 @@
 ---
+category: 开源项目分析
+kind: article
 title: 'Batch Image Studio — 模板驱动的批量图片处理工具'
 date: 2026-04-12
 tags: ['图片处理', 'AI', 'Tauri', '桌面工具']
 description: '基于Tauri + React + LaMa AI模型的桌面端图片批量处理工具，支持AI智能修复、模板驱动批量处理。'
 author: '罗耀生'
+projectId: batch-image-studio
+seriesIds: ['open-experiments']
 ---
 
 ## 应用简介

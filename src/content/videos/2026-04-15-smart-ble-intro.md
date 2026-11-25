@@ -1,11 +1,18 @@
 ---
 title: Smart BLE 跨平台蓝牙调试工具介绍
 date: 2026-04-15
-description: Smart BLE 是一个跨平台的 BLE 调试工具，支持微信小程序、iOS、Android 和 Flutter 多种实现。本文是视频配套笔记。
+description: 蓝析 BLE 工具箱的历史配套笔记。当前为开发预览，可查看源码与构建指引。微信小程序目标已于 2026-09-11 退役。
 platform: bilibili
 tags: ['BLE', '蓝牙', 'IoT', 'Smart BLE']
 author: LuoYaoSheng
+projectId: smart-ble
+seriesIds: ['open-experiments']
+hasUpdateNotice: true
 ---
+
+> **更新说明 · 2026-11-25**
+>
+> 蓝析 BLE 工具箱的微信小程序目标（BLE Toolkit+）已于 2026-09-11 退役。当前为开发预览，请查看[蓝析产品站](https://lightble.i2kai.com)的构建指引，或访问 [GitHub 源码](https://github.com/LuoYaoSheng/smart-ble)和 [Gitee 镜像](https://gitee.com/luoyaosheng/lys-smart-ble)。
 
 ## Smart BLE 是什么
 
@@ -15,7 +22,7 @@ Smart BLE 是一个跨平台的 BLE（蓝牙低功耗）调试工具，核心目
 
 ## 支持的平台
 
-- **微信小程序**（BLE Toolkit+）— 可以扫码直接体验，是最适合第一次接触的入口
+- **微信小程序**（BLE Toolkit+）— 历史实现，已于 2026-09-11 退役
 - **iOS** — 原生 Swift 实现
 - **Android** — 原生 Kotlin 实现
 - **Flutter** — 跨平台统一实现
@@ -44,12 +51,7 @@ Smart BLE 是一个跨平台的 BLE（蓝牙低功耗）调试工具，核心目
 
 ## 如何开始
 
-最简单的方式是微信搜索「BLE Toolkit+」小程序，扫码直接体验 BLE 扫描功能。
-
-如果你想看源码和实现细节，可以访问：
-- Gitee：https://gitee.com/luoyaosheng/lys-smart-ble
-- GitHub：https://github.com/LuoYaoSheng/smart-ble
-- 文档站：https://lightble.i2kai.com
+先在[蓝析产品站](https://lightble.i2kai.com)查看开发预览和对应平台的构建指引，再从 [GitHub](https://github.com/LuoYaoSheng/smart-ble) 或 [Gitee](https://gitee.com/luoyaosheng/lys-smart-ble)查看源码和实现细节。
 
 ## 相关项目
 

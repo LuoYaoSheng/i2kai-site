@@ -1,4 +1,6 @@
 ---
+category: 软件开发
+kind: article
 title: '架构收敛之后：我们到底改了什么，才敢同时上架两个 App'
 date: 2026-06-09
 tags: ['HUB', '微服务', 'Flutter', 'UniApp', '独立开发']

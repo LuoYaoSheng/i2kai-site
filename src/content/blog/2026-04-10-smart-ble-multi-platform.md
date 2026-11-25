@@ -1,9 +1,13 @@
 ---
+category: AI 与 IoT
+kind: practice
 title: 'Smart BLE 阶段更新：多平台交互统一，验证闭环形成'
 date: 2026-04-10
 tags: ['BLE', 'IoT', '跨平台', 'Smart BLE']
 description: 'Smart BLE 多平台产品家族完成阶段性收敛：核心交互统一、桌面端标准化、本地验证和CI闭环。'
 author: '罗耀生'
+projectId: smart-ble
+seriesIds: ['open-experiments']
 ---
 
 ## 更新概述

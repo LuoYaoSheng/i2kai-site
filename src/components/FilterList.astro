@@ -1,0 +1,60 @@
+---
+interface Props {
+  id: string;
+  label: string;
+  categories: readonly string[];
+  categoryLabel?: string;
+  initialCount: number;
+}
+const { id, label, categories, categoryLabel = '分类', initialCount } = Astro.props;
+---
+<div data-filter>
+  <div class="filter-controls" data-controls hidden>
+    <label>{label}<input type="search" autocomplete="off" data-keyword aria-controls={id} placeholder="输入关键词" /></label>
+    {categories.length > 0 && <label>{categoryLabel}<select data-category-select aria-controls={id}>
+      <option value="">全部</option>
+      {categories.map((category) => <option value={category}>{category}</option>)}
+    </select></label>}
+    <p class="filter-count" role="status" aria-atomic="true" data-count>{initialCount} 条结果</p>
+  </div>
+  <div id={id}><slot /></div>
+  <p class="no-results" data-empty hidden>没有匹配的内容。<button type="button" data-reset>清除筛选</button></p>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-filter]').forEach((filter) => {
+    const controls = filter.querySelector<HTMLElement>('[data-controls]')!;
+    const input = filter.querySelector<HTMLInputElement>('[data-keyword]')!;
+    const select = filter.querySelector<HTMLSelectElement>('[data-category-select]');
+    const count = filter.querySelector<HTMLElement>('[data-count]')!;
+    const empty = filter.querySelector<HTMLElement>('[data-empty]')!;
+    const rows = Array.from(filter.querySelectorAll<HTMLElement>('[data-filter-row]'));
+    const groups = Array.from(filter.querySelectorAll<HTMLElement>('[data-filter-group]'));
+    if (!rows.length) return;
+    controls.hidden = false;
+
+    const searchText = rows.map((row) => (row.dataset.search || row.textContent || '').toLocaleLowerCase());
+    function update() {
+      const words = input.value.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
+      const category = select?.value || '';
+      let visible = 0;
+      rows.forEach((row, index) => {
+        const matchesCategory = !category || row.dataset.categories?.split('|').includes(category);
+        row.hidden = !(matchesCategory && words.every((word) => searchText[index].includes(word)));
+        if (!row.hidden) visible++;
+      });
+      groups.forEach((group) => { group.hidden = !group.querySelector('[data-filter-row]:not([hidden])'); });
+      count.textContent = `${visible} 条结果`;
+      empty.hidden = visible > 0;
+    }
+
+    controls.addEventListener('input', update);
+    filter.querySelector('[data-reset]')?.addEventListener('click', () => {
+      input.value = '';
+      if (select) select.value = '';
+      update();
+      input.focus();
+    });
+    update();
+  });
+</script>

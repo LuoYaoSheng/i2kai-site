@@ -1,4 +1,6 @@
 ---
+category: 经验分享
+kind: article
 title: '为什么我选择Flutter做50个应用'
 date: 2026-03-16
 tags: ['Flutter', '技术选型', '跨平台']
