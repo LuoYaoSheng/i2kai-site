@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FilterList from '../components/FilterList.astro';
+import UpdateList from '../components/UpdateList.astro';
+import { recentEntries } from '../data/content';
+import { projects } from '../data/projects';
+
+const updates = await recentEntries();
+const projectLinks = projects.filter((project) => !project.archiveOnly);
+const types = ['技术文章', '实践记录', '实验记录', '项目更新', '视频分享', '视频笔记', '项目档案'];
+---
+<BaseLayout title="搜索 — 爱二开网" description="搜索 i2kai 的文章、项目、开发记录和外部视频分享。">
+  <header class="page-intro compact-intro">
+    <h1>搜索</h1>
+    <p>按标题、分类或关键词查找站内内容。</p>
+  </header>
+  <FilterList id="search-results" label="搜索站内内容" categories={types} categoryLabel="内容类型" initialCount={updates.length + projectLinks.length}>
+    <section data-filter-group>
+      <h2>更新</h2>
+      <UpdateList entries={updates} />
+    </section>
+    <section class="section" data-filter-group>
+      <h2>项目档案</h2>
+      <ul class="line-list">{projectLinks.map((project) => (
+        <li class="link-row" data-filter-row data-categories="项目档案" data-search={[project.title, project.summary, ...project.types, ...project.technologies].join(' ')}>
+          <a href={`/showcase/${project.slug}/`}>{project.title}</a><p>{project.summary}</p>
+        </li>
+      ))}</ul>
+    </section>
+  </FilterList>
+</BaseLayout>

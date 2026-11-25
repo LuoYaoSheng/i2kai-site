@@ -1,0 +1,21 @@
+---
+import { type projects, stageLabels } from '../data/projects';
+const { project, heading = 3 } = Astro.props as { project: typeof projects[number]; heading?: 2 | 3 | 4 };
+const Heading = `h${heading}` as 'h2' | 'h3' | 'h4';
+---
+<li class="project-row" data-filter-row data-categories={project.types.join('|')} data-search={[project.title, project.slug.replaceAll('-', ' '), project.summary, project.category, ...project.types, ...project.technologies].join(' ')}>
+  <div>
+    <Heading class="project-row-title">
+      {project.thumbnail && <img src={project.thumbnail} alt="" width="28" height="28" loading="lazy" decoding="async" />}
+      <a href={`/showcase/${project.slug}/`}>{project.title}</a>
+    </Heading>
+    <p>{project.summary}</p>
+    {project.sources.length > 0 && <div class="text-links project-sources" aria-label={`${project.title} 的源码`}>
+      {project.sources.map(({ label, href }) => <a href={href}>{label}</a>)}
+    </div>}
+  </div>
+  <div class="project-row-status">
+    <p>{project.types.join(' / ')}</p>
+    <p><strong>{project.archiveOnly ? '历史档案' : stageLabels[project.stage]}</strong>{project.release && <span> · {project.release}</span>}</p>
+  </div>
+</li>

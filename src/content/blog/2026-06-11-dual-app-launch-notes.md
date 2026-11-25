@@ -1,4 +1,6 @@
 ---
+category: 经验分享
+kind: practice
 title: '双 App 上架笔记：APK 已出、小程序在审，smoke 清单对照表'
 date: 2026-06-11
 tags: ['上架', 'Flutter', 'UniApp', 'HUB', '独立开发']

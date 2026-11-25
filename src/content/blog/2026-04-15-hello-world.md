@@ -1,10 +1,19 @@
 ---
+category: 开源项目分析
+kind: article
 title: 关于开篇——为什么我要公开做开源
 date: 2026-04-15
 description: 个人介绍、做开源的动机，以及这套 BLE + IoT + 桌面工具项目全景介绍。
 tags: ['开源', '随想']
 author: LuoYaoSheng
+projectId: smart-ble
+seriesIds: ['open-experiments']
+hasUpdateNotice: true
 ---
+
+> **更新说明 · 2026-11-25**
+>
+> 蓝析 BLE 工具箱的微信小程序目标（BLE Toolkit+）已于 2026-09-11 退役。当前为开发预览，请查看[蓝析产品站](https://lightble.i2kai.com)的构建指引，或访问 [GitHub 源码](https://github.com/LuoYaoSheng/smart-ble)和 [Gitee 镜像](https://gitee.com/luoyaosheng/lys-smart-ble)。
 
 ## 你好，我是 i2kai
 
@@ -18,7 +27,7 @@ author: LuoYaoSheng
 
 所以我决定把自己做的东西公开出来：
 
-1. **先让人能体验**：每个项目都可以直接跑起来或者扫码试用
+1. **先让人能体验**：提供清楚的预览、运行或构建指引，具体方式以各项目当前状态为准
 2. **再帮人理解**：配上真实的学习路径和文档，不是 API 列表而是"为什么这样做"
 3. **最后才看源码**：当你知道问题是什么、目标是什么，再读源码会高效得多
 
@@ -28,7 +37,7 @@ author: LuoYaoSheng
 
 ### 核心主线
 
-- **Smart BLE** — 跨平台 BLE 调试工具。微信小程序可以扫码直接体验，是理解 BLE 协议和多平台实现差异的最佳入口。支持小程序、iOS、Android、Flutter 多个实现。
+- **蓝析 BLE 工具箱（Smart BLE）** — 通用 BLE 调试工具，适合学习 BLE 协议和比较 iOS、Android、Flutter 的实现差异。当前为开发预览，各平台能力和构建方式见产品文档。
 - **Open IoT Platform** — 从设备接入、BLE 配网到 MQTT 控制的完整 IoT 平台。ESP32 固件 + Go 服务端 + Flutter APP，一条链路串起硬件、后端和移动端。
 
 ### 支撑工具

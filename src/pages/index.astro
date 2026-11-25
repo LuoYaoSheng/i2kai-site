@@ -1,158 +1,106 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
-import { personalInfo, featuredProjects, projectShowcaseCases } from '../data/site';
+import UpdateList from '../components/UpdateList.astro';
+import ProjectRow from '../components/ProjectRow.astro';
+import VideoRow from '../components/VideoRow.astro';
+import { contacts, personalInfo, siteMeta } from '../data/site';
+import { getProject } from '../data/projects';
+import { isShare, recentEntries, videos } from '../data/content';
 
-const recentPosts = await getCollection('blog', ({ data }) => !data.draft);
-recentPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const latestPost = recentPosts[0];
-const typePriority = {
-  '年度进度': 0,
-  '个人产品': 1,
-  '交付案例': 2,
-  '企业案例': 3,
-  '公开站点': 4,
-  '开源项目': 5,
-};
-
-const showcasePreview = [...projectShowcaseCases]
-  .sort((a, b) => {
-    const aPriority = typePriority[a.type] ?? 9;
-    const bPriority = typePriority[b.type] ?? 9;
-
-    if (aPriority !== bPriority) return aPriority - bPriority;
-    return a.title.localeCompare(b.title, 'zh-CN');
-  })
-  .filter((item) => item.featured)
-  .slice(0, 4);
+const [updates, allVideos] = await Promise.all([recentEntries(), videos()]);
+const shares = allVideos.filter(isShare).slice(0, 2);
+const projectGroups = [
+  { name: '软件与开发工具', slugs: ['smart-ble', 'batch-image-studio'] },
+  { name: '开源硬件与 DIY', slugs: ['queue-caller'] },
+  { name: 'IoT 与智能设备', slugs: ['open-iot-platform', 'esp32-c3-weather-station'] },
+  { name: 'AI 与实验项目', slugs: ['modular-ai-robot-kit'] },
+].map(({ name, slugs }) => ({ name, projects: slugs.flatMap((slug) => getProject(slug) ?? []) }));
+const practices = updates.filter((entry) => ['实践记录', '实验记录'].includes(entry.type)).slice(0, 4);
 ---
-
-<BaseLayout title={`爱二开网 — ${personalInfo.name}，${personalInfo.title}`}>
-  <!-- Hero: 头像 + 签名 -->
-  <section class="hero-personal">
-    <img class="hero-avatar" src="/avatar.jpg" alt={personalInfo.name} width="96" height="96" />
-    <h1 class="hero-name">{personalInfo.name}</h1>
-    <p class="hero-title-sub">{personalInfo.title}</p>
-    <p class="hero-one-liner">
-      {personalInfo.bio}<br/>
-      <em class="hero-motto">「先体验，再学习，再读源码。」</em>
-    </p>
-    <div class="hero-stats">
-      {personalInfo.highlights.map((h) => (
-        <div class="stat-item">
-          <span class="stat-value">{h.value}</span>
-          <span class="stat-label">{h.label}</span>
-        </div>
-      ))}
-    </div>
-    <div class="hero-links">
-      <a href="https://github.com/LuoYaoSheng" target="_blank" rel="noopener">GitHub</a>
-      <a href="https://gitee.com/luoyaosheng" target="_blank" rel="noopener">Gitee</a>
-      <a href="/about">关于我</a>
-      <a href="/contact">联系</a>
-    </div>
-  </section>
-
-  <!-- 我做什么 -->
-  <section class="home-section">
-    <h2 class="section-label">我做什么</h2>
-    <div class="what-grid">
-      <div class="what-item">
-        <span class="what-emoji">📡</span>
-        <div>
-          <strong>BLE & IoT</strong>
-          <p>跨平台 BLE 调试工具、ESP32 固件、MQTT 平台</p>
-        </div>
+<BaseLayout title="i2kai / 爱二开网" description={siteMeta.description}>
+  <section class="home-intro" aria-labelledby="home-title">
+    <div class="home-person">
+      <img class="home-avatar" src="/images/site/laoluo-256.webp" alt="老罗" width="84" height="84" decoding="async" />
+      <div>
+        <h1 id="home-title">你好，我是{personalInfo.nickname}。</h1>
+        <p class="home-tagline">{siteMeta.title}</p>
       </div>
-      <div class="what-item">
-        <span class="what-emoji">🖥️</span>
-        <div>
-          <strong>桌面工具</strong>
-          <p>Redis 管理、数据库客户端、SSH 运维工作台</p>
-        </div>
+    </div>
+    <div class="home-intro-details">
+      <div>
+        <p class="home-identity">{personalInfo.name} · {personalInfo.title}</p>
+        <p class="home-summary">{siteMeta.description}</p>
       </div>
-      <div class="what-item">
-        <span class="what-emoji">📱</span>
-        <div>
-          <strong>移动 & 小程序</strong>
-          <p>Flutter 跨平台、微信小程序 BLE 工具</p>
-        </div>
+      <div class="text-links home-links">
+        <a href={contacts[0].href}>GitHub ↗</a>
+        <a href={contacts[1].href}>Gitee ↗</a>
+        <a href="/rss.xml">RSS</a>
+        <a href="/about/">关于我 →</a>
       </div>
     </div>
   </section>
 
-  <!-- 开源项目 -->
-  <section class="home-section">
-    <h2 class="section-label">开源项目</h2>
-    <div class="projects-list">
-      {featuredProjects.map((project) => (
-        <a href={project.docs || project.repo} target="_blank" rel="noopener" class="project-row">
-          <div class="project-row-main">
-            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
-              <span class="project-row-name">{project.name}</span>
-              <span class="tag-sm tag-opensource">开源</span>
-            </div>
-            <span class="project-row-summary">{project.summary}</span>
+  <div class="home-reading-desk">
+    <section class="home-feature" aria-labelledby="feature-title">
+      <div class="section-head"><h2 id="feature-title">从一个项目开始</h2><a href="/projects/">浏览项目 →</a></div>
+      <article>
+        <a class="feature-story" href="/blog/2026-04-12-batch-image-studio/">
+          <p class="entry-meta">Batch Image Studio · 开源桌面工具</p>
+          <h3>把重复的图片处理，交给一个模板。</h3>
+          <div class="home-figure">
+            <img src="/images/site/batch-image-studio-960.webp"
+              srcset="/images/site/batch-image-studio-480.webp 480w, /images/site/batch-image-studio-960.webp 960w"
+              sizes="(max-width: 46rem) calc(100vw - 2.5rem), (max-width: 72rem) 54vw, 39rem"
+              alt="Batch Image Studio 桌面应用的图片导入和模板入口，原版开发截图" width="1540" height="960" fetchpriority="high" decoding="async" />
           </div>
-          <div class="project-row-tags">
-            {project.tags.map((tag) => (
-              <span class="tag-sm">{tag}</span>
-            ))}
-          </div>
+          <p class="feature-description">用 Tauri + React 做一个本地图片工具，从模板复用到 AI 修复，分享实现过程。</p>
+          <span class="feature-read">阅读开发记录 <span aria-hidden="true">→</span></span>
         </a>
-      ))}
-    </div>
-    <a href="https://open.i2kai.com" class="more-link" target="_blank" rel="noopener">所有项目 → open.i2kai.com</a>
-  </section>
-
-  <!-- 项目展示 -->
-  <section class="home-section">
-    <h2 class="section-label">项目展示</h2>
-    <div class="home-showcase-grid">
-      {showcasePreview.map((item) => (
-        <a href={`/showcase/${item.slug}`} class="home-showcase-card">
-          {item.image && (
-            <img src={item.image} alt={item.title} loading="lazy" />
-          )}
-          <span>{item.type} / {item.category}</span>
-          <strong>{item.title}</strong>
-          <p>{item.summary}</p>
-        </a>
-      ))}
-    </div>
-    <a href="/showcase" class="more-link">项目展示专题</a>
-  </section>
-
-  <!-- 最近写的内容 -->
-  {latestPost && (
-    <section class="home-section">
-      <h2 class="section-label">最近写的内容</h2>
-      <a href={`/blog/${latestPost.slug}`} class="post-teaser">
-        <span class="post-teaser-title">{latestPost.data.title}</span>
-        <span class="post-teaser-date mono">{latestPost.data.date.toLocaleDateString('zh-CN')}</span>
-      </a>
-      <a href="/blog" class="more-link">更多文章</a>
+      </article>
+      <nav class="home-starting-points" aria-label="更多技术主题">
+        <a href="/blog/2026-04-10-smart-ble-multi-platform/"><span>软件与设备</span><strong>同一个蓝牙工具，如何适配多个平台？</strong><span aria-hidden="true">→</span></a>
+        <a href="/showcase/queue-caller/"><span>硬件与 DIY</span><strong>从数码管和按钮，做一个离线叫号器</strong><span aria-hidden="true">→</span></a>
+      </nav>
     </section>
-  )}
 
-  <!-- 公众号 -->
-  <section class="home-section">
-    <h2 class="section-label">公众号</h2>
-    <div class="wechat-grid">
-      <div class="wechat-qr-box">
-        <img src="/wechat-qr.jpg" alt="极客第一行二维码" width="120" height="120" />
-        <div class="wechat-qr-text">
-          <strong>{personalInfo.wechatPublic}</strong>
-          <p>物联网、微服务、分布式系统实战经验。</p>
-        </div>
+    <section class="home-updates" aria-labelledby="updates-title">
+      <div class="section-head">
+        <h2 id="updates-title">最近更新</h2>
+        <a href="/search/">全部更新 →</a>
       </div>
-      <div class="wechat-qr-box">
-        <img src="/wechat-qr-2.jpg" alt="落落在厦二维码" width="120" height="120" />
-        <div class="wechat-qr-text">
-          <strong>{personalInfo.wechatPublic2}</strong>
-          <p>生活记录与分享。</p>
-        </div>
-      </div>
+      <UpdateList entries={updates.slice(0, 6)} />
+      <a class="home-article-link" href="/blog/">继续读文章 →</a>
+    </section>
+  </div>
+
+  <section class="home-section" aria-labelledby="projects-title">
+    <div class="section-head">
+      <h2 id="projects-title">开源项目与原型</h2>
+      <a href="/projects/">全部项目 <span aria-hidden="true">→</span></a>
     </div>
+    <div class="home-project-groups">
+      {projectGroups.map((group) => (
+        <section class="home-project-group" aria-label={group.name}>
+          <h3>{group.name}</h3>
+          <ul class="line-list">{group.projects.map((project) => <ProjectRow project={project} heading={4} />)}</ul>
+        </section>
+      ))}
+    </div>
+  </section>
+
+  <section class="home-section" aria-labelledby="videos-title">
+    <div class="section-head">
+      <h2 id="videos-title">视频分享</h2>
+      <a href="/videos/">全部视频 <span aria-hidden="true">→</span></a>
+    </div>
+    {shares.length > 0 ? <ul class="line-list">{shares.map((video) => <VideoRow video={video} />)}</ul> : <p>已保留历史视频笔记。</p>}
+  </section>
+
+  <section class="home-section" aria-labelledby="practice-title">
+    <div class="section-head">
+      <h2 id="practice-title">技术记录</h2>
+      <a href="/blog/">查看文章 <span aria-hidden="true">→</span></a>
+    </div>
+    <UpdateList entries={practices} />
   </section>
 </BaseLayout>

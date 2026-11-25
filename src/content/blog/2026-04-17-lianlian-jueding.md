@@ -1,4 +1,6 @@
 ---
+category: 软件开发
+kind: practice
 title: '恋恋决定：情侣互动决策小程序 v1.0.0 上架'
 date: 2026-04-17
 tags: ['微信小程序', 'uni-app', 'Vue3', '个人产品']

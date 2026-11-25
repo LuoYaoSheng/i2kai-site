@@ -1,116 +1,67 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ProjectCard from '../components/ProjectCard.astro';
-import { projectGroups, docSites, projectShowcaseCases } from '../data/site';
+import FilterList from '../components/FilterList.astro';
+import ProjectRow from '../components/ProjectRow.astro';
+import { getProject, projects, projectTypes, stageLabels } from '../data/projects';
+import { projectGroups, docSites } from '../data/site';
 
-const openSourceGroups = projectGroups.filter(g => g.title !== '企业级项目' && g.title !== '其他个人项目');
-const enterpriseGroup = projectGroups.find(g => g.title === '企业级项目');
-const otherGroup = projectGroups.find(g => g.title === '其他个人项目');
-const showcaseCount = projectShowcaseCases.length;
+const archive = projects.filter((project) => project.archiveOnly);
+const current = projects.filter((project) => !project.archiveOnly);
+const open = current.filter((project) => project.sources.length > 0);
+const prototypes = current.filter((project) => project.stage === 'Prototype');
+const independent = current.filter((project) => !open.includes(project) && !prototypes.includes(project));
+const groups = [
+  { name: '开源项目', items: open },
+  { name: '硬件原型', items: prototypes },
+  { name: '独立应用', items: independent },
+];
+const standaloneTools = projectGroups.flatMap((group) => group.items).filter((item) => ['serial-tool', 'db-gateway'].includes(item.id));
+const selected = [
+  { slug: 'smart-ble', label: '开源软件', description: '扫描、连接和调试蓝牙设备。档案里可以找到各平台的构建指引和源码。' },
+  { slug: 'queue-caller', label: '硬件与 DIY', description: '用数码管、实体按钮和蜂鸣器实现离线叫号，记录从飞线样机到控制板和外壳的进展。' },
+].flatMap(({ slug, ...feature }) => {
+  const project = getProject(slug);
+  return project ? [{ ...feature, project }] : [];
+});
 ---
+<BaseLayout title="项目 — 爱二开网" description="软件、开源工具、硬件、DIY、物联网与 AI 项目的开发档案。">
+  <header class="page-intro directory-intro">
+    <div><h1>项目</h1><p>从桌面工具到物联网原型，按项目查看开发进展、源码和公开资料。</p></div>
+    <nav class="text-links" aria-label="项目页导航"><a href="#project-directory">浏览项目目录 ↓</a><a href="/series/">系列记录</a></nav>
+  </header>
 
-<BaseLayout title="项目 — 爱二开网">
-  <div class="page-intro">
-    <h1>项目</h1>
-    <p>开源项目、个人产品、企业案例和交付经验的完整展示。</p>
+  {selected.length > 0 && <section class="section-feature project-selection" aria-label="项目精选">
+    {selected.map(({ label, description, project }) => <a class="feature-lead" href={`/showcase/${project.slug}/`} aria-labelledby={`selected-${project.slug}`}>
+      <p class="entry-meta">{label} · {stageLabels[project.stage]}</p>
+      <h2 id={`selected-${project.slug}`}>{project.title}</h2>
+      <p>{description}</p>
+      <span class="feature-link">查看项目进展 →</span>
+    </a>)}
+  </section>}
+
+  <section class="section" id="project-directory" aria-labelledby="project-directory-title">
+    <div class="section-head"><h2 id="project-directory-title">项目目录</h2></div>
+    <FilterList id="project-results" label="搜索项目" categories={projectTypes} categoryLabel="项目类型" initialCount={current.length}>
+      {groups.map(({ name, items }) => items.length > 0 && <section class="catalog-group" data-filter-group>
+        <h3>{name}</h3>
+        <ul class="line-list">{items.map((project) => <ProjectRow project={project} heading={4} />)}</ul>
+      </section>)}
+    </FilterList>
+  </section>
+
+  <div class="directory-resources">
+    <section class="section">
+      <h2>工具与文档</h2>
+      <ul class="line-list">{standaloneTools.map((item) => <li class="link-row">
+        <a href={item.repo}>{item.name}</a> <span class="entry-meta">· {item.status}</span><p>{item.summary}</p>
+      </li>)}</ul>
+      <div class="text-links project-docs">{docSites.map((site) => <a href={site.url}>{site.name}</a>)}</div>
+    </section>
+
+    <section class="section">
+      <h2>历史项目档案</h2>
+      <ul class="plain-links">{archive.map((project) => <li><a href={`/showcase/${project.slug}/`}>{project.title}</a></li>)}</ul>
+      <div class="text-links"><a href="/showcase/">项目档案索引</a><a href="https://open.i2kai.com">开源文档站 ↗</a></div>
+    </section>
   </div>
-
-  <section class="project-showcase-bridge">
-    <div>
-      <span class="eyebrow">Project Showcase</span>
-      <h2>项目展示专题</h2>
-      <p>从旧版 i2kai.com 迁入的项目档案，覆盖 {showcaseCount} 个产品和交付案例。</p>
-    </div>
-    <a href="/showcase">进入专题</a>
-  </section>
-
-  {openSourceGroups.map((group) => (
-    <section class="section">
-      <div class="section-head">
-        <div>
-          <h2>{group.title}</h2>
-          <p>{group.intro}</p>
-        </div>
-      </div>
-      <div class="section-grid">
-        {group.items.map((project) => (
-          <ProjectCard {...project} />
-        ))}
-      </div>
-    </section>
-  ))}
-
-  {enterpriseGroup && (
-    <section class="section">
-      <div class="section-head">
-        <div>
-          <h2>{enterpriseGroup.title}</h2>
-          <p>{enterpriseGroup.intro}</p>
-        </div>
-      </div>
-      <div class="section-grid">
-        {enterpriseGroup.items.map((project) => (
-          <div class="section-card">
-            <div class="meta-row">
-              <span class="tag-sm tag-enterprise">企业</span>
-              <div class="meta-row" style="margin-bottom:0">
-                {project.tags.map((tag) => (
-                  <span class="meta-pill">{tag}</span>
-                ))}
-              </div>
-            </div>
-            <h3>{project.name}</h3>
-            <p>{project.summary}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  )}
-
-  {otherGroup && (
-    <section class="section">
-      <div class="section-head">
-        <div>
-          <h2>{otherGroup.title}</h2>
-          <p>{otherGroup.intro}</p>
-        </div>
-      </div>
-      <div class="section-grid">
-        {otherGroup.items.map((project) => (
-          <div class="section-card">
-            <div class="meta-row">
-              <span class="tag-sm tag-online">已上线</span>
-              <div class="meta-row" style="margin-bottom:0">
-                {project.tags.map((tag) => (
-                  <span class="meta-pill">{tag}</span>
-                ))}
-              </div>
-            </div>
-            <h3>{project.name}</h3>
-            <p>{project.summary}</p>
-            {project.repo && (
-              <a href={project.repo} target="_blank" rel="noopener">访问 →</a>
-            )}
-          </div>
-        ))}
-      </div>
-    </section>
-  )}
-
-  <section class="section">
-    <div class="section-head">
-      <div>
-        <h2>文档与产品入口</h2>
-        <p>部分项目有独立文档站或产品入口，按实际可访问状态整理。</p>
-      </div>
-    </div>
-    <div class="section-grid">
-      {docSites.map((site) => (
-        <a href={site.url} target="_blank" rel="noopener" class="section-card doc-link-card">
-          <h3>{site.name}</h3>
-          <span class="mono">{new URL(site.url).hostname}</span>
-        </a>
-      ))}
-    </div>
-  </section>
 </BaseLayout>

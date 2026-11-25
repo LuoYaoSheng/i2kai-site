@@ -2,69 +2,27 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { contacts, personalInfo } from '../data/site';
 ---
-
 <BaseLayout title={`联系 — ${personalInfo.name}`}>
-  <div class="page-intro">
-    <h1>联系我</h1>
-    <p>欢迎通过以下方式联系我，无论是项目合作、技术交流还是其他问题。</p>
-  </div>
-
-  <section class="section">
-    <div class="section-grid">
-      {contacts.map((contact) => (
-        <div class="section-card">
-          <span class="eyebrow">{contact.label}</span>
-          <h3>{contact.value}</h3>
-          <a href={contact.href} target="_blank" rel="noopener">
-            前往 &rarr;
-          </a>
-        </div>
-      ))}
-    </div>
-  </section>
-
-  <!-- 公众号 -->
-  <section class="section">
-    <div class="section-head">
+  <header class="page-intro directory-intro">
+    <div><h1>联系方式</h1><p>欢迎交流技术、讨论项目或提出反馈。</p></div>
+    <a class="directory-link" href="/about/">← 关于老罗</a>
+  </header>
+  <div class="directory-resources contact-layout">
+    <section>
+      <h2>联系老罗</h2>
+      <dl class="case-facts">
+        {contacts.slice(0, 3).map((contact) => <div><dt>{contact.label}</dt><dd><a href={contact.href}>{contact.value}</a></dd></div>)}
+        <div><dt>备用邮箱</dt><dd><a href="mailto:1034639560@qq.com">1034639560@qq.com</a></dd></div>
+        <div><dt>电话</dt><dd><a href="tel:+8615980116983">+86 15980116983</a></dd></div>
+        <div><dt>地区</dt><dd>{personalInfo.location}</dd></div>
+      </dl>
+    </section>
+    <section>
       <h2>微信公众号</h2>
-    </div>
-    <div class="wechat-grid">
-      <div class="wechat-qr-box">
-        <img src="/wechat-qr.jpg" alt="极客第一行二维码" width="140" height="140" />
-        <div class="wechat-qr-text">
-          <strong>{personalInfo.wechatPublic}</strong>
-          <p>分享物联网、微服务、分布式系统等领域的专业知识与实战经验。</p>
-          <p>技术文章 · 项目实战 · 行业动态 · 公众号内容</p>
-        </div>
+      <div class="contact-channels">
+        <figure><img src="/wechat-qr.jpg" alt="极客第一行公众号二维码" width="140" height="140" loading="lazy" /><figcaption><strong>{personalInfo.wechatPublic}</strong><br />技术文章与项目实践</figcaption></figure>
+        <figure><img src="/wechat-qr-2.jpg" alt="落落在厦公众号二维码" width="140" height="140" loading="lazy" /><figcaption><strong>{personalInfo.wechatPublic2}</strong><br />生活记录</figcaption></figure>
       </div>
-      <div class="wechat-qr-box">
-        <img src="/wechat-qr-2.jpg" alt="落落在厦二维码" width="140" height="140" />
-        <div class="wechat-qr-text">
-          <strong>{personalInfo.wechatPublic2}</strong>
-          <p>生活记录与分享。</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 其他联系方式 -->
-  <section class="section">
-    <div class="section-head">
-      <h2>其他方式</h2>
-    </div>
-    <div class="contact-list">
-      <div class="contact-item">
-        <span class="contact-label">邮箱</span>
-        <span>1034639560@qq.com</span>
-      </div>
-      <div class="contact-item">
-        <span class="contact-label">电话</span>
-        <span>+86 15980116983</span>
-      </div>
-      <div class="contact-item">
-        <span class="contact-label">地区</span>
-        <span>{personalInfo.location}</span>
-      </div>
-    </div>
-  </section>
+    </section>
+  </div>
 </BaseLayout>

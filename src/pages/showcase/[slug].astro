@@ -1,115 +1,121 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { projectShowcaseCases } from '../../data/site';
+import { canPurchase, series } from '../../data/maker.mjs';
+import { articlePath, articles, isShare, linkedProjects, videoPath, videos } from '../../data/content';
+import { fabricationNotes, projects, stageLabels } from '../../data/projects';
 
 export function getStaticPaths() {
-  return projectShowcaseCases.map((project) => ({
-    params: { slug: project.slug },
-    props: { project },
-  }));
+  return projects.map((project) => ({ params: { slug: project.slug }, props: { project } }));
 }
-
-const { project } = Astro.props;
-const image = project.image || undefined;
-const resources = project.resources || project.links || [];
+const { project } = Astro.props as { project: typeof projects[number] };
+const { details } = project;
+const hardware = project.types.some((type) => type === 'Hardware');
+const fabrication = fabricationNotes[project.slug];
+const relatedSeries = series.filter((item) => details.seriesIds.includes(item.id));
+const [posts, allVideos] = await Promise.all([articles(), videos()]);
+const relatedPosts = posts.filter((post) => linkedProjects(post.data).includes(project.slug));
+const relatedVideos = allVideos.filter((video) => linkedProjects(video.data).includes(project.slug));
+const resources = (project.resources ?? []).filter((item) => !['source', 'download'].includes(item.kind ?? ''));
+const gallery = [...new Set(project.gallery ?? [])].filter((image) => image !== project.image);
+const purchases = [details.participation.kit, details.participation.assembled].filter(canPurchase);
+const stage = project.archiveOnly ? '历史档案' : `${project.stage} · ${stageLabels[project.stage]}`;
 ---
-
-<BaseLayout title={`${project.title} — 项目展示`} description={project.summary} image={image}>
+<BaseLayout title={`${project.title} — 项目档案 · 爱二开网`} description={project.summary} image={project.image}>
   <article class="case-detail">
-    <a class="case-back" href="/showcase">返回项目展示</a>
-
-    <header class="case-hero">
-      <div>
-        <span class="eyebrow">{project.type} / {project.category}</span>
-        <h1>{project.title}</h1>
-        <p>{project.summary}</p>
-        <div class="case-meta-grid">
-          <div>
-            <span>年份</span>
-            <strong>{project.year}</strong>
-          </div>
-          <div>
-            <span>角色</span>
-            <strong>{project.role}</strong>
-          </div>
-          <div>
-            <span>平台</span>
-            <strong>{project.platforms.join(' / ')}</strong>
-          </div>
-        </div>
-        <div class="case-access-note">
-          <span>访问方式</span>
-          <strong>{project.access}</strong>
-        </div>
-      </div>
-
-      {project.image && (
-        <img class="case-hero-image" src={project.image} alt={project.title} loading="eager" />
-      )}
+    <a class="back-link" href="/projects/">← 全部项目</a>
+    <header class="page-intro case-intro">
+      <p class="entry-meta">{project.types.join(' / ')} · {project.year}</p>
+      <h1>{project.title}</h1>
+      <p>{project.summary}</p>
+      <p class="entry-meta">{project.type} · {project.role}</p>
+      <nav class="text-links case-jump-links" aria-label="项目详情导航">
+        <a href="#project-status">{project.sources.length ? '版本与源码' : '研发状态'} ↓</a>
+        {fabrication && <a href="#project-fabrication">3D 设计与试配 ↓</a>}
+        {relatedPosts.length > 0 && <a href="#project-articles">相关文章 ↓</a>}
+      </nav>
     </header>
 
-    {resources.length > 0 && (
-      <section class="case-section case-resource-section">
-        <h2>体验、下载与二维码</h2>
-        <div class="case-resources">
-          {resources.map((resource) => (
-            resource.kind === 'qrcode' ? (
-              <div class="case-resource-qr">
-                <img src={resource.image} alt={resource.label} loading="lazy" />
-                <div>
-                  <strong>{resource.label}</strong>
-                  {resource.note && <p>{resource.note}</p>}
-                </div>
-              </div>
-            ) : (
-              <a
-                href={resource.href}
-                target={resource.href?.startsWith('http') ? '_blank' : undefined}
-                rel={resource.href?.startsWith('http') ? 'noopener' : undefined}
-                class:list={['case-resource-link', resource.kind && `resource-${resource.kind}`]}
-              >
-                <span>{resource.kind === 'download' ? '下载' : resource.kind === 'source' ? '源码' : resource.kind === 'repo' ? '仓库' : resource.kind === 'site' ? '体验' : '入口'}</span>
-                <strong>{resource.label}</strong>
-              </a>
-            )
-          ))}
-        </div>
-      </section>
-    )}
+    <div class="project-detail-layout">
+      <div class="project-narrative">
+        {details.notice && <aside class="case-notice"><strong>状态更新 · {details.verifiedAt}</strong><p>{details.notice}</p></aside>}
+        {project.image && !hardware && <figure class="project-image">
+          <img src={project.image} alt={`${project.title} 的项目配图`} loading="lazy" decoding="async" data-remote={project.image.startsWith('https://') ? true : undefined} />
+          <figcaption>{details.imageNote ?? (project.image.endsWith('icon.png') || project.image.endsWith('.svg') ? '项目图标' : '原项目配图')}</figcaption>
+        </figure>}
 
-    <section class="case-section">
-      <h2>项目背景</h2>
-      <p>{project.challenge}</p>
-    </section>
+        <section class="case-section"><h2>项目背景</h2><p>{project.challenge}</p></section>
 
-    <section class="case-section">
-      <h2>解决方式</h2>
-      <p>{project.solution}</p>
-    </section>
+        <section class="case-section">
+          <h2>{hardware ? '功能与结构设计' : '功能与技术架构'}</h2>
+          <p>{project.solution}</p>
+          <dl class="case-facts">
+            <div><dt>技术</dt><dd>{project.technologies.join(' · ')}</dd></div>
+            <div><dt>平台</dt><dd>{project.platforms.join(' · ')}</dd></div>
+          </dl>
+        </section>
 
-    <section class="case-section">
-      <h2>结果</h2>
-      <p>{project.result}</p>
-    </section>
+        {fabrication && <section class="case-section" id="project-fabrication">
+          <h2>3D 设计与试配</h2>
+          <dl class="case-facts fabrication-facts">
+            <div><dt>结构设计</dt><dd>{fabrication.design}</dd></div>
+            <div><dt>设计用途</dt><dd>{fabrication.use}</dd></div>
+            <div><dt>模型下载</dt><dd>{fabrication.model ? <a href={fabrication.model.url}>{fabrication.model.label}</a> : '暂无已公开的模型文件。'}</dd></div>
+            <div><dt>实物验证</dt><dd>{fabrication.verification}</dd></div>
+          </dl>
+        </section>}
 
-    <section class="case-section">
-      <h2>技术栈</h2>
-      <div class="case-tech-grid">
-        {project.technologies.map((tech) => (
-          <span>{tech}</span>
-        ))}
+        {hardware && project.image && <figure class="project-image">
+          <img src={project.image} alt={`${project.title} 的项目配图`} loading="lazy" decoding="async" data-remote={project.image.startsWith('https://') ? true : undefined} />
+          <figcaption>{details.imageNote || '原项目配图'}</figcaption>
+        </figure>}
+
+        <section class="case-section"><h2>{hardware ? '开发过程与验证' : '开发过程与现状'}</h2><p>{project.result}</p></section>
+
+        {gallery.length > 0 && <section class="case-section">
+          <h2>{hardware ? '项目图片' : '界面与项目资料'}</h2>
+          <div class="case-gallery">
+            {gallery.map((src, index) => <figure><img src={src} alt={`${project.title} 项目配图 ${index + 1}`} loading="lazy" decoding="async" data-remote={src.startsWith('https://') ? true : undefined} /></figure>)}
+          </div>
+        </section>}
       </div>
-    </section>
 
-    {project.gallery && project.gallery.length > 0 && (
-      <section class="case-section">
-        <h2>项目截图</h2>
-        <div class="case-gallery">
-          {project.gallery.map((src) => (
-            <img src={src} alt={`${project.title} 截图`} loading="lazy" />
-          ))}
-        </div>
-      </section>
-    )}
+      <aside class="project-sidebar" aria-label="版本和公开资料">
+        <section id="project-status">
+          <h2>版本与公开状态</h2>
+          <dl class="release-list">
+            <div><dt>研发</dt><dd>{stage}{details.status !== 'unknown' && <span class="status-detail">{details.statusLabel}</span>}</dd></div>
+            <div><dt>源码</dt><dd>{project.sources.length ? '已公开' : '暂无公开入口'}</dd></div>
+            <div><dt>许可</dt><dd>{project.license || (project.sources.length ? '以原仓库声明为准' : '暂无公开许可声明')}{project.slug === 'esp32-c3-weather-station' && '（原创代码与说明）'}</dd></div>
+            <div><dt>发布</dt><dd>{project.releaseUrl ? <a href={project.releaseUrl}>{project.release}</a> : project.release || '暂无已确认的正式发布'}</dd></div>
+            <div><dt>下载</dt><dd>{project.download ? <a href={project.download}>查看发布文件 ↗</a> : '暂无已确认的下载入口'}</dd></div>
+            <div><dt>购买</dt><dd>{purchases.length ? purchases.map((item) => <a href={item.productUrl}>查看购买渠道</a>) : '无购买入口'}</dd></div>
+          </dl>
+          {project.sources.length > 0 && <ul class="plain-links">
+            {project.sources.map(({ label, href }) => <li><a href={href}>{label} ↗</a></li>)}
+          </ul>}
+        </section>
+        {resources.length > 0 && <section>
+          <h2>已有资料</h2>
+          <ul class="plain-links">
+            {resources.map((resource) => <li>
+              {resource.kind === 'qrcode' ? <div class="case-resource-qr">
+                <img src={resource.image} alt={resource.label} width="92" height="92" loading="lazy" decoding="async" data-remote={resource.image.startsWith('https://') ? true : undefined} />
+                <div><strong>{resource.label}</strong>{resource.note && <p>{resource.note}</p>}</div>
+              </div> : <a href={resource.href}>{resource.label}</a>}
+            </li>)}
+          </ul>
+        </section>}
+      </aside>
+    </div>
+
+    {relatedPosts.length > 0 && <section class="case-section" id="project-articles">
+      <h2>相关文章</h2><ul class="plain-links">{relatedPosts.map((post) => <li><a href={articlePath(post)}>{post.data.title}</a></li>)}</ul>
+    </section>}
+    {relatedVideos.length > 0 && <section class="case-section">
+      <h2>相关视频与笔记</h2><ul class="plain-links">{relatedVideos.map((video) => <li><a href={videoPath(video)}>{video.data.title}</a> <span class="entry-meta">· {isShare(video) ? '外部视频' : '配套笔记'}</span></li>)}</ul>
+    </section>}
+    {relatedSeries.length > 0 && <section class="case-section">
+      <h2>系列记录</h2><ul class="plain-links">{relatedSeries.map((item) => <li><a href={`/series/${item.id}/`}>{item.title}</a></li>)}</ul>
+    </section>}
   </article>
 </BaseLayout>

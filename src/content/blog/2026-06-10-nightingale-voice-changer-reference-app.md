@@ -1,4 +1,6 @@
 ---
+category: AI 与 IoT
+kind: practice
 title: '夜莺变声器：voice/sts/convert 任务链与 public-api 契约实录'
 date: 2026-06-10
 tags: ['Flutter', '变声器', 'HUB', 'voice', '独立开发']

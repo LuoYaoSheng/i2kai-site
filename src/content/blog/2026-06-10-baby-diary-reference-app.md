@@ -1,4 +1,6 @@
 ---
+category: 软件开发
+kind: practice
 title: '宝宝点滴：/app/babydiary/v1 契约、bootstrap 与 record-sessions 实录'
 date: 2026-06-10
 tags: ['UniApp', '小程序', 'HUB', '育儿', '独立开发']

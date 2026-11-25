@@ -1,4 +1,6 @@
 ---
+category: 软件开发
+kind: article
 title: 'HUB Center：统一的后端底座'
 date: 2026-03-18
 tags: ['Go', '后端架构', '微服务']

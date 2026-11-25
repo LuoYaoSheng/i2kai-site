@@ -1,0 +1,15 @@
+---
+import { getProject } from '../data/projects';
+import { series } from '../data/maker.mjs';
+interface Props { projectIds?: string[]; seriesIds?: string[]; showProjectNotice?: boolean; }
+const { projectIds = [], seriesIds = [], showProjectNotice = true } = Astro.props;
+const projects = projectIds.flatMap((id) => getProject(id) ?? []);
+const relatedSeries = series.filter((item) => seriesIds.includes(item.id));
+---
+{showProjectNotice && projects.filter((project) => project.details.notice).map((project) => (
+  <aside class="case-notice"><strong>{project.title} · 状态更新</strong><p>{project.details.notice}</p></aside>
+))}
+{(projects.length > 0 || relatedSeries.length > 0) && <nav class="content-context" aria-label="关联项目与系列">
+  {projects.map((project) => <a href={`/showcase/${project.slug}/`}>{project.title}</a>)}
+  {relatedSeries.map((item) => <a href={`/series/${item.id}/`}>{item.title}</a>)}
+</nav>}

@@ -1,0 +1,19 @@
+---
+import { isoDate } from '../data/content';
+interface Props {
+  entries: { href: string; title: string; date: Date; category: string; type: string; description: string }[];
+}
+const { entries } = Astro.props;
+---
+<ul class="update-list line-list">
+  {entries.map((entry) => (
+    <li class="update-row" data-filter-row data-categories={entry.type} data-search={[entry.title, entry.description, entry.category, entry.type, isoDate(entry.date)].join(' ')}>
+      <time class="entry-date" datetime={isoDate(entry.date)}>{isoDate(entry.date)}</time>
+      <div>
+        <a class="entry-title" href={entry.href}>{entry.title}</a>
+        <span class="mobile-entry-meta">{entry.type} · {entry.category}</span>
+      </div>
+      <span class="entry-meta desktop-entry-meta">{entry.type} · {entry.category}</span>
+    </li>
+  ))}
+</ul>

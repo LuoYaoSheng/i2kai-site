@@ -1,50 +1,49 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import VideoEmbed from '../../components/VideoEmbed.astro';
-import { getCollection, render } from 'astro:content';
+import ContentContext from '../../components/ContentContext.astro';
+import { render } from 'astro:content';
+import { articles, articlePath, isShare, isoDate, linkedProjects, videoSource, videos, type Video } from '../../data/content';
 
 export async function getStaticPaths() {
-  const videos = await getCollection('videos', ({ data }) => !data.draft);
-  return videos.map((video) => ({
-    params: { slug: video.id },
-    props: { video },
+  return (await videos()).map((video) => ({
+    params: { slug: isShare(video) ? video.slug : video.id }, props: { video },
   }));
 }
 
-const { video } = Astro.props;
+const { video } = Astro.props as { video: Video };
 const { Content } = await render(video);
+const data = video.data;
+const share = data.kind === 'share' ? data : undefined;
+const source = videoSource(video);
+const relatedArticles = share ? (await articles()).filter((post) => share.articleIds.includes(post.slug)) : [];
 ---
-
-<BaseLayout title={`${video.data.title} — 爱二开网`}>
-  <div class="page-intro">
-    <a href="/videos">&larr; 返回视频列表</a>
-    <h1>{video.data.title}</h1>
-    <div class="meta-row">
-      <span class="mono">
-        {video.data.date.toLocaleDateString('zh-CN')}
-      </span>
-      <span class="status-chip">
-        {video.data.platform === 'bilibili' ? 'Bilibili' : 'YouTube'}
-      </span>
-      {video.data.duration && (
-        <span class="meta-pill">{video.data.duration}</span>
-      )}
-      {video.data.tags.map((tag: string) => (
-        <span class="meta-pill">{tag}</span>
-      ))}
+<BaseLayout title={`${data.title} — 爱二开网`} description={data.description} image={share?.cover}>
+  <article class:list={['reading', share && 'video-detail']}>
+    <a class="back-link" href="/videos/">← 全部视频</a>
+    <header class="page-intro reading-intro">
+      <p class="entry-meta">{share ? '视频分享' : '历史配套笔记'} · {data.category}</p>
+      <h1>{data.title}</h1>
+      <div class="publication-meta">
+        {share && <span>原作者 {share.originalAuthor}</span>}
+        {source.watch && <span>来源 {source.name}</span>}
+        {share && <span>原发表于 <time datetime={isoDate(share.originalDate)}>{isoDate(share.originalDate)}</time></span>}
+        <span>{share ? '分享于' : '笔记发表于'} <time datetime={isoDate(data.date)}>{isoDate(data.date)}</time></span>
+        {data.duration && <span>{data.duration}</span>}
+      </div>
+    </header>
+    <div class="video-detail-layout">
+      <div class="video-detail-media"><VideoEmbed title={data.title} {...source} cover={share?.cover} /></div>
+      {share && <section class="video-reason"><h2>推荐理由</h2><p>{share.recommendation}</p></section>}
     </div>
-    <p>{video.data.description}</p>
-  </div>
-
-  <!-- 视频嵌入播放器 -->
-  <VideoEmbed
-    platform={video.data.platform}
-    bvid={video.data.bvid}
-    videoId={video.data.videoId}
-  />
-
-  <!-- 文字笔记 -->
-  <article class="prose">
-    <Content />
+    <section class="section">
+      <h2>{share ? '观看笔记' : '配套笔记'}</h2>
+      <div class="prose"><Content /></div>
+    </section>
+    {(linkedProjects(data).length > 0 || relatedArticles.length > 0 || data.seriesIds.length > 0) && <section class="section">
+      <h2>相关项目与文章</h2>
+      <ContentContext projectIds={linkedProjects(data)} seriesIds={data.seriesIds} showProjectNotice={!data.hasUpdateNotice && !share} />
+      {relatedArticles.length > 0 && <ul class="plain-links">{relatedArticles.map((post) => <li><a href={articlePath(post)}>{post.data.title}</a></li>)}</ul>}
+    </section>}
   </article>
 </BaseLayout>

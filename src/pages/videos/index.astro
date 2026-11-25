@@ -1,47 +1,34 @@
 ---
+import { videoCategories } from '../../data/taxonomy';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import FilterList from '../../components/FilterList.astro';
+import VideoRow from '../../components/VideoRow.astro';
+import { isoDate, isShare, videoPath, videos } from '../../data/content';
 
-const allVideos = await getCollection('videos', ({ data }) => !data.draft);
-const videos = allVideos.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const all = await videos();
+const shares = all.filter(isShare);
+const notes = all.filter((video) => !isShare(video));
 ---
+<BaseLayout title="视频 — 爱二开网" description="来自 Bilibili、YouTube 等原站的技术视频书签与观看笔记。">
+  <header class="page-intro directory-intro">
+    <div><h1>视频</h1><p>收藏值得回看的技术视频，附推荐理由和我的观看笔记。</p></div>
+    {notes.length > 0 && <a class="directory-link" href="#video-notes">历史视频笔记 ↓</a>}
+  </header>
 
-<BaseLayout title="视频 — 爱二开网">
-  <div class="page-intro">
-    <h1>视频</h1>
-    <p>Bilibili / YouTube 视频内容与笔记。</p>
-  </div>
+  <section class="video-library" aria-labelledby="recent-videos">
+    <div class="section-head"><h2 id="recent-videos">最近分享</h2></div>
+    {shares.length > 0 ? <FilterList id="video-results" label="搜索视频" categories={videoCategories} initialCount={shares.length}>
+      <ul class="line-list video-collection">{shares.map((video) => <VideoRow video={video} showFeatured />)}</ul>
+    </FilterList> : <p>暂无已收录的外部视频。</p>}
+  </section>
 
-  {videos.length > 0 ? (
-    <section class="section">
-      <div class="section-grid">
-        {videos.map((video) => (
-          <article class="video-card">
-            <div class="meta-row">
-              <span class="mono">
-                {video.data.date.toLocaleDateString('zh-CN')}
-              </span>
-              <span class="status-chip">
-                {video.data.platform === 'bilibili' ? 'Bilibili' : 'YouTube'}
-              </span>
-            </div>
-            <h3>{video.data.title}</h3>
-            <p>{video.data.description}</p>
-            {video.data.tags.length > 0 && (
-              <div class="meta-row">
-                {video.data.tags.map((tag: string) => (
-                  <span class="meta-pill">{tag}</span>
-                ))}
-              </div>
-            )}
-            <a href={`/videos/${video.id}`}>查看详情 &rarr;</a>
-          </article>
-        ))}
-      </div>
-    </section>
-  ) : (
-    <div class="empty-state">
-      <p>视频内容即将到来，敬请期待。</p>
-    </div>
-  )}
+  {notes.length > 0 && <section class="section" aria-labelledby="video-notes">
+    <div class="section-head"><h2 id="video-notes">历史视频笔记</h2></div>
+    <ul class="line-list">{notes.map((note) => (
+      <li class="article-row">
+        <time class="entry-date" datetime={isoDate(note.data.date)}>{isoDate(note.data.date)}</time>
+        <div><h3><a href={videoPath(note)}>{note.data.title}</a></h3><p>{note.data.description}</p></div>
+      </li>
+    ))}</ul>
+  </section>}
 </BaseLayout>

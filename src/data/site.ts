@@ -1,9 +1,8 @@
 // 站点元信息
 export const siteMeta = {
   name: '爱二开网',
-  title: '物联网架构专家 / 全栈开发者 / 开源爱好者',
-  description: '12年+全栈技术开发与管理经验，专注于物联网、智慧城市和开源项目。',
-  heroNote: '用真实项目记录 BLE、IoT、桌面工具和个人产品的开发旅程。',
+  title: '记录技术，分享开源，动手创造。',
+  description: '这里记录软件开发、开源项目、硬件制作、AI、物联网，以及各种有意思的技术实践。',
 };
 
 // SEO 元数据常量
@@ -11,8 +10,8 @@ export const seoMeta = {
   siteUrl: 'https://i2kai.com',
   siteName: '爱二开网',
   author: '罗耀生',
-  keywords: 'i2kai, 罗耀生, 物联网架构, 智慧城市, 独立开发者, 开源项目, 项目展示, BLE, IoT, 桌面工具, Smart BLE, RedisPilot',
-  themeColor: '#3b82f6',
+  keywords: '创客, DIY, 生活改造, 开放设计, i2kai, 罗耀生, 物联网架构, 智慧城市, 独立开发者, 开源项目, 项目展示, BLE, IoT, 桌面工具, Smart BLE, RedisPilot',
+  themeColor: '#FFFFFF',
   ogImage: '/favicon.svg',
 };
 
@@ -20,6 +19,7 @@ export const seoMeta = {
 export const personalInfo = {
   name: '罗耀生',
   alias: 'i2kai',
+  nickname: '老罗',
   title: '物联网架构专家 / 全栈开发者',
   bio: '12年+全栈技术开发与管理经验。专注于物联网技术架构、智慧城市解决方案和分布式系统开发，致力于用技术创新解决实际问题。',
   tagline: '先体验，再学习，再读源码',
@@ -129,69 +129,92 @@ export const timeline = [
   },
 ];
 
-// 精选项目（首页只展示代表作）
-export const featuredProjects = [
-  {
-    name: 'Smart BLE',
-    id: 'smart-ble',
-    status: '主入口',
-    summary: '跨平台 BLE 调试工具。微信小程序可扫码直接体验，是理解 BLE 协议和多平台实现差异的最佳入口。',
-    repo: 'https://gitee.com/luoyaosheng/lys-smart-ble',
-    github: 'https://github.com/LuoYaoSheng/smart-ble',
-    docs: 'https://lightble.i2kai.com',
-    tags: ['BLE', 'IoT', '小程序', '跨平台'],
-  },
-  {
-    name: 'Open IoT Platform',
-    id: 'open-iot-platform',
-    status: '主入口',
-    summary: '从设备接入、BLE 配网到 MQTT 控制的完整 IoT 平台。ESP32 固件 + Go 服务端 + Flutter APP 全链路。',
-    repo: 'https://gitee.com/luoyaosheng/lys-iot-platform',
-    github: 'https://github.com/LuoYaoSheng/open-iot-platform',
-    docs: 'https://iot.open.i2kai.com',
-    tags: ['IoT', 'MQTT', 'BLE配网', '全栈'],
-  },
-  {
-    name: 'RedisPilot',
-    id: 'redispilot',
-    status: '公开中',
-    summary: '本地优先的 Redis 桌面管理工具。基于 Tauri 构建，轻量、快速。',
-    repo: 'https://gitee.com/luoyaosheng/lys-redis-pilot',
-    github: 'https://github.com/LuoYaoSheng/lys-redis-pilot',
-    docs: 'https://redis.open.i2kai.com',
-    tags: ['Redis', '桌面工具', 'Tauri'],
-  },
-];
+type ProjectResource =
+  | { kind: 'qrcode'; label: string; image: string; note?: string }
+  | { kind?: 'source' | 'site' | 'download'; label: string; href: string };
 
-// 项目展示专题
-export const showcaseMeta = {
-  title: '项目展示专题',
-  description: '真实交付、个人产品、开源项目和企业案例的集中整理。',
-  stats: [
-    { label: '项目数量', value: '20' },
-    { label: '公开仓库', value: '10+' },
-    { label: '主线经验', value: '12年+' },
-  ],
-};
+interface ProjectShowcaseCase {
+  title: string;
+  slug: string;
+  type: string;
+  category: string;
+  year: string;
+  role: string;
+  access: string;
+  summary: string;
+  challenge: string;
+  solution: string;
+  result: string;
+  technologies: string[];
+  platforms: string[];
+  resources?: ProjectResource[];
+  image?: string;
+  gallery?: string[];
+  featured?: boolean;
+}
 
-export const projectShowcaseCases = [
+export const projectShowcaseCases: ProjectShowcaseCase[] = [
   {
-    title: 'BLE Toolkit+ / Smart BLE',
+    title: 'QueueCaller 离线叫号器',
+    slug: 'queue-caller',
+    type: '研发项目',
+    category: '硬件开发',
+    year: '2026',
+    role: '独立研发',
+    access: '样机研发中 · 公开研发摘要',
+    summary: '面向小型餐饮和服务场景的离线叫号器，探索用四位数码管和实体按钮做出易组装的 DIY 硬件。',
+    challenge: '在没有网络连接时，也能在柜台更新号码，并让等候的人看清号码、听到提醒。',
+    solution: '以四位数码管显示号码，用实体按钮操作，配合状态灯和蜂鸣提示。围绕这些部件探索控制板与 3D 打印外壳的布置。',
+    result: '飞线样机已分别检查显示、按钮、状态灯和蜂鸣器。控制板与外壳仍在研发，整机和生产验收待完成。',
+    technologies: ['四位数码管', '实体按钮', '蜂鸣器', '3D 打印外壳'],
+    platforms: ['独立离线硬件'],
+  },
+  {
+    title: 'Modular AI Robot Kit',
+    slug: 'modular-ai-robot-kit',
+    type: '研发项目',
+    category: '硬件开发',
+    year: '2026',
+    role: '独立研发',
+    access: '首样准备中 · 公开研发摘要',
+    summary: '模块化 DIY 机器人套件。外壳和连接方式可分别选择，当前优先验证纸盒首样。',
+    challenge: '让第一次做机器人的人能从容易加工的外壳与常见部件入手，并为后续更换模块保留空间。',
+    solution: '规划四种组合：纸盒 + 飞线、纸盒 + Carrier PCB、3D 打印 + 飞线、3D 打印 + Carrier PCB。当前首样采用纸盒 + 面包板 + 飞线，先检查装配与布线。',
+    result: '已准备纸盒首样的候选纸样。实物装配、承力、通电和交互验证尚未全部完成。',
+    technologies: ['纸盒结构', '3D 打印外壳', '面包板与飞线', 'Carrier PCB'],
+    platforms: ['模块化硬件原型'],
+  },
+  {
+    title: 'ESP32-C3 桌面天气站',
+    slug: 'esp32-c3-weather-station',
+    type: '研发项目',
+    category: '硬件开发',
+    year: '2026',
+    role: '独立研发',
+    access: 'PROVISIONAL / HOLD · 公开研发摘要',
+    summary: '用 ESP32-C3、环境传感器和 OLED 探索桌面天气显示，兼顾 Wi-Fi 配网、天气数据和离线缓存。',
+    challenge: '让桌面设备同时呈现室内环境与网络天气，并在网络中断时保留可查看的缓存数据。',
+    solution: '以 ESP32-C3 为主控，探索温湿度和气压采集、OLED 显示、按键交互、Wi-Fi 配网与天气数据缓存。',
+    result: '机械方案保持 PROVISIONAL / HOLD。模块配合、电气功能、仿真及整机制造验收仍待完成。',
+    technologies: ['ESP32-C3', '温湿度与气压传感器', 'OLED', 'Wi-Fi', '离线缓存'],
+    platforms: ['桌面硬件原型'],
+  },
+  {
+    title: '蓝析 BLE 工具箱 / Smart BLE',
     slug: 'smart-ble',
     type: '开源项目',
     category: '物联网',
     year: '2025',
     role: '项目负责人',
-    access: '可扫码体验，源码开放',
-    summary: '多平台 BLE 调试工具，覆盖微信小程序、移动端和桌面端，是 BLE 协议学习、设备联调和多平台实现验证的主入口。',
+    access: '开发预览 · MIT 源码开放 · 小程序已退役',
+    summary: '面向学习和设备联调的开源通用 BLE 调试工具，覆盖扫描、连接、GATT 读写、Notify、广播和日志。当前为开发预览。',
     challenge: '不同平台的蓝牙 API、权限策略和异常处理差异明显，需要在体验层保持一致，同时保留平台能力边界。',
     solution: '用统一抽象层收口扫描、连接、读写、广播和权限处理，并按平台拆分适配实现，减少业务层对平台细节的依赖。',
-    result: '形成可直接体验的小程序入口和多端实现参考，降低 BLE 调试与学习门槛。',
-    technologies: ['微信小程序', 'Flutter', 'CoreBluetooth', 'Android BLE', 'BLE'],
-    platforms: ['微信小程序', 'iOS', 'Android', '桌面端'],
+    result: '公开软件源码与 ESP32 示例供学习和自建；正式安装包准备中。微信小程序目标于 2026-09-11 退役。',
+    technologies: ['Flutter', 'SwiftUI', 'CoreBluetooth', 'Kotlin', 'BLE', 'ESP32'],
+    platforms: ['iOS / macOS 原生工程', 'Android', '跨平台实现（能力见文档）'],
     resources: [
-      { label: '体验与文档', kind: 'site', href: 'https://lightble.i2kai.com' },
-      { label: '微信小程序码', kind: 'qrcode', image: '/projects/smart-ble/qr-code.jpg', note: '扫码体验 BLE Toolkit+ 小程序版' },
+      { label: '开发预览与构建文档', kind: 'site', href: 'https://lightble.i2kai.com' },
       { label: 'Gitee 源码', kind: 'source', href: 'https://gitee.com/luoyaosheng/lys-smart-ble' },
       { label: 'GitHub 源码', kind: 'source', href: 'https://github.com/LuoYaoSheng/smart-ble' },
     ],
@@ -209,24 +232,22 @@ export const projectShowcaseCases = [
     category: '物联网',
     year: '2026',
     role: '项目负责人',
-    access: '提供文档入口，源码开放',
-    summary: '端到端 IoT 平台，覆盖 Go 服务端、Flutter 移动端、BLE 配网、MQTT 通信和 ESP32 固件。',
+    access: 'GPL-3.0 源码与项目文档',
+    summary: '提供 Go 服务端、Flutter 客户端、BLE 配网、MQTT 和 ESP32 示例固件的开源 IoT 平台工程。',
     challenge: 'IoT 项目常被拆成服务端、移动端、固件和协议文档几段，学习者很难跑通完整链路。',
     solution: '把设备管理、物模型、MQTT、BLE 配网、移动 App 和固件放在同一套仓库结构中，按端到端链路组织文档。',
-    result: '形成从设备接入到移动端控制的完整开源样板，适合学习 IoT 平台架构和硬件联调。',
+    result: '已有设备接入与移动端控制的工程示例，可用于学习架构和硬件联调。目前没有完整的 Web 管理后台，生产就绪状态尚未核实。',
     technologies: ['Go', 'Gin', 'Flutter', 'MQTT', 'ESP32', 'MySQL', 'Redis'],
-    platforms: ['Web', 'Flutter App', 'ESP32 固件', 'MQTT 服务'],
+    platforms: ['Go 服务端', 'Flutter App', 'ESP32 固件', 'MQTT 服务'],
     resources: [
       { label: '文档站', kind: 'site', href: 'https://iot.open.i2kai.com' },
-      { label: '配网小程序码', kind: 'qrcode', image: '/projects/open-iot-platform/wechat-qrcode.jpg', note: '扫码查看 SmartLink 配网入口' },
+      { label: 'SmartLink 配网二维码（待核实）', kind: 'qrcode', image: '/projects/open-iot-platform/wechat-qrcode.jpg', note: '历史配网二维码。当前扫码有效性未核实，配网方式请参阅 SmartLink 文档。' },
+      { label: 'SmartLink 配网文档', kind: 'site', href: 'https://github.com/LuoYaoSheng/open-iot-platform/blob/master/smartlink-hub/README.md' },
       { label: 'Gitee 源码', kind: 'source', href: 'https://gitee.com/luoyaosheng/lys-iot-platform' },
       { label: 'GitHub 源码', kind: 'source', href: 'https://github.com/LuoYaoSheng/open-iot-platform' },
     ],
     image: '/projects/open-iot-platform/app-icon.png',
-    gallery: [
-      '/projects/open-iot-platform/app-icon.png',
-      '/projects/open-iot-platform/wechat-qrcode.jpg',
-    ],
+    gallery: ['/projects/open-iot-platform/app-icon.png'],
     featured: true,
   },
   {
@@ -316,7 +337,7 @@ export const projectShowcaseCases = [
       { label: '文档站', kind: 'site', href: 'https://batch.open.i2kai.com' },
       { label: '下载页面', kind: 'download', href: 'https://github.com/LuoYaoSheng/batch-image-studio/releases' },
       { label: 'GitHub 源码', kind: 'source', href: 'https://github.com/LuoYaoSheng/batch-image-studio' },
-      { label: 'Gitee 源码', kind: 'source', href: 'https://gitee.com/luoyaosheng/batch-image-studio' },
+      { label: 'Gitee 源码', kind: 'source', href: 'https://gitee.com/luoyaosheng/lys-image-studio' },
     ],
     image: '/projects/batch-image-studio/home.png',
     gallery: [
@@ -611,26 +632,6 @@ export const projectShowcaseCases = [
   },
 ];
 
-// 技能领域
-export const skillAreas = [
-  {
-    title: 'BLE & IoT',
-    description: '跨平台 BLE 调试、设备配网、MQTT 通信、固件协作',
-  },
-  {
-    title: '桌面工具',
-    description: 'Redis 管理、数据库客户端、SSH 运维工作台',
-  },
-  {
-    title: '移动开发',
-    description: '微信小程序、跨平台移动应用',
-  },
-  {
-    title: '全栈工程',
-    description: '服务端、前端、数据库、DevOps',
-  },
-];
-
 // 项目列表（完整数据，projects 页使用）
 export const projectGroups = [
   {
@@ -638,20 +639,20 @@ export const projectGroups = [
     intro: 'BLE 与 IoT 学习的核心入口项目。',
     items: [
       {
-        name: 'Smart BLE',
+        name: '蓝析 BLE 工具箱',
         id: 'smart-ble',
-        status: '主入口',
-        summary: '跨平台 BLE 调试工具，多分支多模式的实践样板。',
+        status: '开发预览',
+        summary: '开源通用 BLE 调试工具，提供多平台实现与构建指引。',
         repo: 'https://gitee.com/luoyaosheng/lys-smart-ble',
         github: 'https://github.com/LuoYaoSheng/smart-ble',
         docs: 'https://lightble.i2kai.com',
-        tags: ['BLE', 'IoT', '小程序', '跨平台'],
+        tags: ['BLE', 'IoT', '开源', '跨平台'],
       },
       {
         name: 'Open IoT Platform',
         id: 'open-iot-platform',
         status: '主入口',
-        summary: '从设备接入、配网到控制管理的一体化 IoT 平台主系统。',
+        summary: 'GPL-3.0 开源 IoT 工程，提供设备接入、配网和移动端控制示例。目前没有完整的 Web 管理后台。',
         repo: 'https://gitee.com/luoyaosheng/lys-iot-platform',
         github: 'https://github.com/LuoYaoSheng/open-iot-platform',
         docs: 'https://iot.open.i2kai.com',
@@ -738,7 +739,7 @@ export const projectGroups = [
       {
         name: 'CodexSwitch',
         id: 'codex-switch',
-        status: '公开中',
+        status: '暂停维护',
         summary: '跨平台代码/配置切换工具，灵活的 Profile 切换与 Provider 扩展机制。',
         repo: 'https://gitee.com/luoyaosheng/lys-codex-switch',
         github: 'https://github.com/LuoYaoSheng/lys-codex-switch',
@@ -841,7 +842,7 @@ export const contacts = [
 
 // 文档站汇总
 export const docSites = [
-  { name: 'Smart BLE', url: 'https://lightble.i2kai.com' },
+  { name: '蓝析 BLE 工具箱', url: 'https://lightble.i2kai.com' },
   { name: 'Open IoT Platform', url: 'https://iot.open.i2kai.com' },
   { name: 'RedisPilot', url: 'https://redis.open.i2kai.com' },
   { name: 'QueryLab', url: 'https://query.open.i2kai.com' },

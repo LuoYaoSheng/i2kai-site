@@ -1,4 +1,6 @@
 ---
+category: 技术教程
+kind: article
 title: '我的自动化发布系统：从Markdown到多平台一键生成'
 date: 2026-03-18
 tags: ['自动化', 'Node.js', '内容创作']

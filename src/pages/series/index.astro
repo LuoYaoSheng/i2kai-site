@@ -1,0 +1,10 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { series } from '../../data/maker.mjs';
+---
+<BaseLayout title="系列记录 — 爱二开网" description="生活改造、原创制作与开源实验的系列记录。">
+  <header class="page-intro compact-intro"><a class="back-link" href="/projects/">← 项目目录</a><h1>系列记录</h1><p>生活改造、原创制作和开源实验。</p></header>
+  <ul class="line-list">{series.map((item) => <li class="link-row">
+    <h2><a href={`/series/${item.id}/`}>{item.title}</a></h2><p>{item.summary}</p>
+  </li>)}</ul>
+</BaseLayout>
