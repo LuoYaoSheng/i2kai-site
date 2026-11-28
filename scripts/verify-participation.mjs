@@ -32,7 +32,13 @@ for (const slug of ['missing-project', 'smart-ble', 'open-iot-platform', ...hard
 }
 for (const slug of hardwareSlugs) {
   const detail = getProjectDetails(slug);
-  assert.equal(canSelfBuild(detail.openResources), false, `${slug} must not offer an unreviewed resource`);
+  if (slug === 'queue-caller') {
+    assert.equal(canSelfBuild(detail.openResources), true, 'QueueCaller has owner-approved public sources and licenses');
+    assert.equal(detail.openResources.url, 'https://github.com/LuoYaoSheng/queue-caller');
+    assert.match(detail.openResources.license, /CERN-OHL-P/);
+  } else {
+    assert.equal(canSelfBuild(detail.openResources), false, `${slug} must not offer an unreviewed resource`);
+  }
   assert.deepEqual(detail.seriesIds, ['fun-builds']);
 }
 console.log('Participation guards: passed (valid, missing, unavailable, paused, unverified, invalid URL/price/license cases).');

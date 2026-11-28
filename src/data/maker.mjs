@@ -23,7 +23,7 @@ export const series = [
 export const projectDetails = {
   'queue-caller': {
     status: 'prototype', statusLabel: '样机研发中',
-    openResources: { state: 'not_published', note: '硬件复刻资料、生产文件和许可范围待审核。' },
+    openResources: { state: 'published', url: 'https://github.com/LuoYaoSheng/queue-caller', license: 'MIT（代码） / CERN-OHL-P v2（原创硬件与3D） / CC BY 4.0（原创文档）', note: '离线基础版源码已在GitHub与Gitee公开；V1为影片版本，V2/V3新版3D已单独标注。第三方和实物资格按各版说明。' },
   },
   'modular-ai-robot-kit': {
     status: 'prototype', statusLabel: '纸盒首样准备中',

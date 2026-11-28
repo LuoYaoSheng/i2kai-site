@@ -48,9 +48,10 @@ export const fabricationNotes: Record<string, {
   model?: { url: string; label: string };
 }> = {
   'queue-caller': {
-    design: '控制板与 3D 打印外壳正在研发，外壳围绕数码管、按钮和内部布线布置。',
+    design: 'V1为影片中的凸起飞线壳；V2新版平直飞线壳、V3新版PCB集成3D分别保留原生FreeCAD源与安装图。',
     use: '外壳设计可用于查看装配空间，并在试打印后检查开孔、固定点和操作手感。',
-    verification: '已有飞线样机的部件检查记录。整机装配与使用验证待完成。',
+    verification: 'V1机械组装完成，但绿灯未亮、蜂鸣器偏弱；V2/V3继续保持PROVISIONAL，实配、电流、温升和整机验收待完成。',
+    model: { url: 'https://github.com/LuoYaoSheng/queue-caller/tree/main/cad', label: '查看V1/V2/V3原生FreeCAD模型' },
   },
   'esp32-c3-weather-station': {
     design: '已有 ESP32-C3、传感器与 OLED 的机械布置方案，结构状态为 PROVISIONAL / HOLD。',
